@@ -18,7 +18,14 @@ public class JwtUtil {
     public String generateToken(User user){
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION);
-        return Jwts.builder().setSubject(user.getUsername()).setIssuedAt(now).setExpiration(expiryDate).signWith(SignatureAlgorithm.ES512, JWT_SECRET).compact();
+        // do thuat toan gen token no khong tuong thich vs ham signWith
+        // hinh nhu thieu casi gi do
+        // cai nay n gen ra token nhung lieu decode thi se ra nhung thong tin gi
+        //ok roi day
+//        trong cai inplement userdetailservice no tra ve username ok hieu r
+
+        return Jwts.builder().setSubject(user.getUsername().toString()).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(expiryDate).signWith(SignatureAlgorithm.HS512, JWT_SECRET).compact();
+//        return Jwts.builder().setSubject(user.getUsername()).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(expiryDate).signWith(SignatureAlgorithm.ES512, JWT_SECRET).compact();
     }
 
     public String getUserNameFromJWT(String token){
@@ -41,4 +48,6 @@ public class JwtUtil {
         }
         return false;
     }
+
+
 }

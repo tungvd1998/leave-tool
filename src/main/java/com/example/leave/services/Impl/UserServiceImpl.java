@@ -1,5 +1,6 @@
 package com.example.leave.services.Impl;
 
+import com.example.leave.infrastructure.security.JwtUtil;
 import com.example.leave.models.User;
 import com.example.leave.repositories.UserRepository;
 import com.example.leave.services.UserService;
@@ -32,5 +33,13 @@ public class UserServiceImpl implements UserService {
             userPrincipal.setPassword(user.getPassword());
         }
         return userPrincipal;
+    }
+
+    @Override
+    public String login(User user) {
+        User userDb = userRepository.findByUsername(user.getUsername());
+        JwtUtil jwtUtil = new JwtUtil();
+        String token = jwtUtil.generateToken(user);
+        return token;
     }
 }

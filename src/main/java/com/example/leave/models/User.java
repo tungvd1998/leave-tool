@@ -19,7 +19,7 @@ public class User {
     private String lastName;
     private String mobile;
     private String email;
-    private Integer status;
+//    private Integer status; khong co trong db
     private java.util.Date created;
     private Date modified;
     private String imageProfile;

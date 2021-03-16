@@ -21,40 +21,26 @@ public class UserSecurity extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
-//    @Bean
-    @Autowired
-    private  JwtAuthenticationFilter jwtAuthenticationFilter;
-//    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-//        return new JwtAuthenticationFilter();
-//    }
+//    @Autowired
+//    private  JwtAuthenticationFilter jwtAuthenticationFilter;
 
-//    @Bean(BeanIds.AUTHENTICATION_MANAGER)
+
+//    @Bean
 //    @Override
 //    public AuthenticationManager authenticationManagerBean() throws Exception {
 //        // Get AuthenticationManager bean
 //        return super.authenticationManagerBean();
 //    }
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        // Get AuthenticationManager bean
-        return super.authenticationManagerBean();
-    }
-
     @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
     }
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.csrf().disable().authorizeRequests().antMatchers("/sys/**").permitAll()
         .anyRequest().authenticated();
-        httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+//        httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
