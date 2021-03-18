@@ -5,17 +5,12 @@ import com.example.leave.models.JwtRequest;
 import com.example.leave.models.JwtResponse;
 import com.example.leave.models.User;
 import com.example.leave.services.AuthenticationService;
-import com.example.leave.services.Impl.AuthenticationServiceImpl;
 import com.example.leave.services.Impl.UserServiceImpl;
 import com.example.leave.services.UserService;
-import jdk.jfr.internal.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
