@@ -20,7 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("sys/v1/user")
+@RequestMapping("sys/v1")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -37,13 +37,13 @@ public class UserController {
     @Autowired
     private UserServiceImpl jwtUserDetailsService;
 
-    @PostMapping("/register")
+    @PostMapping("/user/register")
     public User register(@RequestBody User user){
         return userService.createUser(user);
     }
 
 
-    @PostMapping(value = "/login")
+    @PostMapping(value = "/user/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 
         authenticationService.authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
@@ -53,7 +53,7 @@ public class UserController {
         return ResponseEntity.ok(new JwtResponse(userService.login(userDetails)));
     }
 
-    @GetMapping("/hello")
+    @GetMapping("/test/hello")
     public ResponseEntity<String> getContent(){
         return new ResponseEntity<>("Hello", HttpStatus.OK);
     }
