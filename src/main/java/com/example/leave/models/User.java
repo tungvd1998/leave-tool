@@ -12,9 +12,11 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String username;
-    @Column(length = 60)
+
     private String password;
+
     private String firstName;
     private String lastName;
     private String mobile;
