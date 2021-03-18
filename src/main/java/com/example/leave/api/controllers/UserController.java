@@ -4,7 +4,6 @@ import com.example.leave.infrastructure.security.JwtUtil;
 import com.example.leave.models.JwtRequest;
 import com.example.leave.models.JwtResponse;
 import com.example.leave.models.User;
-//import com.example.leave.services.Impl.JwtUserDetailsServiceImpl;
 import com.example.leave.services.AuthenticationService;
 import com.example.leave.services.Impl.AuthenticationServiceImpl;
 import com.example.leave.services.Impl.UserServiceImpl;
@@ -51,30 +50,12 @@ public class UserController {
 
         final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 
-
-
-//        final String token = jwtUtil.generateToken(userDetails);
-
         return ResponseEntity.ok(new JwtResponse(userService.login(userDetails)));
     }
 
-
-//    @PostMapping("login")
-//    public String login(@RequestBody User user){
-//        return  userService.login(user);
-//    }
     @GetMapping("/hello")
     public ResponseEntity<String> getContent(){
         return new ResponseEntity<>("Hello", HttpStatus.OK);
     }
 
-//    private void authenticate(String username, String password) throws Exception {
-//        try {
-//            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-//        } catch (DisabledException e) {
-//            throw new Exception("USER_DISABLED", e);
-//        } catch (BadCredentialsException e) {
-//            throw new Exception("INVALID_CREDENTIALS", e);
-//        }
-//    }
 }

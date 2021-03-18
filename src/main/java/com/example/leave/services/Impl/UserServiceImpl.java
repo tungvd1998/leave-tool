@@ -62,13 +62,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userPrincipal;
     }
 
-//    @Override
-//    public String login(User user) {
-//        User userDb = userRepository.findByUsername(user.getUsername());
-//        JwtUtil jwtUtil = new JwtUtil();
-//        String token = jwtUtil.generateToken(user);
-//        return token;
-//    }
     @Override
     public String login(UserDetails userDetails){
         final String token = jwtUtil.generateToken(userDetails);
