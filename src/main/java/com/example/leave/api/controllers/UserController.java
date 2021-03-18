@@ -3,6 +3,7 @@ package com.example.leave.api.controllers;
 import com.example.leave.infrastructure.security.JwtUtil;
 import com.example.leave.models.JwtRequest;
 import com.example.leave.models.JwtResponse;
+import com.example.leave.models.ResponseObject;
 import com.example.leave.models.User;
 import com.example.leave.services.AuthenticationService;
 import com.example.leave.services.Impl.UserServiceImpl;
@@ -13,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("sys/v1")
@@ -47,10 +50,45 @@ public class UserController {
 
         return ResponseEntity.ok(new JwtResponse(userService.login(userDetails)));
     }
+    @PostMapping("/user/logout")
+    public ResponseObject logout(RequestBody requestBody){
+        return new ResponseObject(userService.logout(null));
+    }
 
-    @GetMapping("/test/hello")
+    @GetMapping("/hello")
     public ResponseEntity<String> getContent(){
         return new ResponseEntity<>("Hello", HttpStatus.OK);
     }
-
+    @GetMapping("/user/{id}")
+    public ResponseEntity<User> get(@PathVariable Integer id){
+        try{
+            User user = userService.get(id);
+            return new ResponseEntity<User>(user, HttpStatus.OK);
+        }catch(NoSuchElementException e)
+        {
+            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @PostMapping("/user/update/{id}")
+    public ResponseEntity<?> update(@RequestBody User user, @PathVariable Integer id)
+    {
+        try {
+            User existUser = userService.get(id);
+            userService.save(user);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (NoSuchElementException e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @PostMapping("/user/delete/{id}")
+    public ResponseEntity<?> delete(@RequestBody User user, @PathVariable Integer id)
+    {
+        try {
+            User existUser = userService.get(id);
+            userService.delete(user);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (NoSuchElementException e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
