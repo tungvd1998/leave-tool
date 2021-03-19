@@ -6,13 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 public interface UserService {
     User createUser(User user);
     User findByUsername(String username);
-    String login(UserDetails userDetails);
-    String logout(String request);
-    User get(Integer id);
-    void save(User user);
-    void delete(User user);
+    String loginUser(UserDetails userDetails);
+    User getByIdUser(Integer id);
+    void saveUser(User user);
+    void deleteUser(User user);
+    List<User> listAllUser();
 
 }
