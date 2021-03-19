@@ -23,8 +23,8 @@ public class MailController {
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(MyConstants.FRIEND_EMAIL);
-        message.setSubject("Test Simple Email");
-        message.setText("Hello, Im testing Simple Email");
+        message.setSubject("Test Email");
+        message.setText("Pham Anh Tu");
 
         // Send Message!
         this.emailSender.send(message);
