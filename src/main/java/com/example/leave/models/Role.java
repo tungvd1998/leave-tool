@@ -20,17 +20,6 @@ public class Role implements Serializable {
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) {
-//            return true;
-//        }
-//        if (!(o instanceof Role)) {
-//            return false;
-//        }
-//        return Objects.equals(name, ((Role) o).name);
-//    }
-//
     @Override
     public int hashCode() {
         return Objects.hashCode(name);
