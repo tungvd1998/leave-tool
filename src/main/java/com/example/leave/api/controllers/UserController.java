@@ -10,8 +10,12 @@ import com.example.leave.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("sys/v1")
@@ -41,13 +45,52 @@ public class UserController {
 
         final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 
-        return ResponseEntity.ok(new JwtResponse(userService.login(userDetails)));
+        return ResponseEntity.ok(new JwtResponse(userService.loginUser(userDetails)));
     }
 
-    @GetMapping("/test/hello")
+    @GetMapping("/hello")
     public ResponseEntity<String> getContent(){
         return new ResponseEntity<>("Hello", HttpStatus.OK);
     }
 
+    @GetMapping("/user")
+    public List<User> list(){
+        return userService.listAllUser();
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<User> get(@PathVariable Integer id){
+        try{
+            User user = userService.getByIdUser(id);
+            System.out.println("sssssssss");
+            return new ResponseEntity<User>(user, HttpStatus.OK);
+        }catch(NoSuchElementException e)
+        {
+            System.out.println("lllllllllll");
+            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @PostMapping("/user/update/{id}")
+    public ResponseEntity<?> update(@RequestBody User user, @PathVariable Integer id)
+    {
+        try {
+            User existUser = userService.getByIdUser(id);
+            userService.saveUser(user);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (NoSuchElementException e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @PostMapping("/user/delete/{id}")
+    public ResponseEntity<?> delete(@RequestBody User user, @PathVariable Integer id)
+    {
+        try {
+            User existUser = userService.getByIdUser(id);
+            userService.deleteUser(user);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (NoSuchElementException e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 }

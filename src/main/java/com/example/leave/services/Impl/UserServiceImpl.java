@@ -10,10 +10,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -56,9 +59,31 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public String login(UserDetails userDetails){
+    public String loginUser(UserDetails userDetails){
         final String token = jwtUtil.generateToken(userDetails);
-
         return token;
+    }
+
+    @Override
+    public User getByIdUser(Integer id) {
+        return userRepository.findById(id).get();
+    }
+
+    @Override
+    public void saveUser(User user) {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        userRepository.save(user);
+    }
+
+    @Override
+    public void deleteUser(User user) {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        user.setStatus(0);
+        userRepository.save(user);
+    }
+
+    @Override
+    public List<User> listAllUser() {
+        return userRepository.findAll();
     }
 }

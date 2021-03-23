@@ -8,15 +8,14 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
 @Data
+@Entity
 @Table(name = "users")
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String username;
-    @Column(length = 60)
     private String password;
     private String firstName;
     private String lastName;
@@ -29,7 +28,6 @@ public class User implements Serializable {
     private Integer gender;
     private Date birthday;
     private Date hireDate;
-
     private Integer deptId;
     private Integer groupId;
 
