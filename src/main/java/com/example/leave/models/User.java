@@ -3,12 +3,15 @@ package com.example.leave.models;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -25,9 +28,14 @@ public class User {
     private Integer gender;
     private Date birthday;
     private Date hireDate;
-
     private Integer deptId;
     private Integer groupId;
 
+    @ManyToMany(cascade = CascadeType.MERGE, fetch=FetchType.EAGER)
+    @JoinTable(	name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+
+    private Set<Role> roles;
 
 }

@@ -27,9 +27,6 @@ public class UserController {
     private AuthenticationService authenticationService;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
     private JwtUtil jwtUtil;
 
     @Autowired
@@ -95,4 +92,5 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
 }
