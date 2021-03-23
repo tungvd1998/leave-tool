@@ -17,7 +17,7 @@ public class LeaveApplicationController {
 
     @PostMapping("/createApplication")
     public ResponseEntity<?> createApplication(@RequestBody LeaveApplication leaveApplication) throws Exception{
-        return new ResponseEntity<LeaveApplication>(leaveApplicationService.create(leaveApplication), HttpStatus.OK);
+        return new ResponseEntity<>(leaveApplicationService.createLeaveApplication(leaveApplication), HttpStatus.OK);
     }
 
     @GetMapping("/getApplicationByUserId/{userId}")

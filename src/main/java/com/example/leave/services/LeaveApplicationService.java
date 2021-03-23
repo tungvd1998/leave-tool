@@ -11,4 +11,6 @@ public interface LeaveApplicationService {
 
     List<LeaveApplication> getByUserId(Integer userId) throws Exception;
 
+    LeaveApplication createLeaveApplication(LeaveApplication leaveApplication);
+
 }

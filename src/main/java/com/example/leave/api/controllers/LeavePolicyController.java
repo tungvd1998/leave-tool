@@ -19,7 +19,6 @@ public class LeavePolicyController {
     private LeavePolicyService leavePolicyService;
 
     @GetMapping("/getAllPolicies")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MEMBER')")
     public List<LeavePolicy> getAllPolicy(){
         List<LeavePolicy> listPolicy = leavePolicyService.getListLeavePolicy();
         return listPolicy;
