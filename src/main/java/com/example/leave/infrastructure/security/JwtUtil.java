@@ -13,7 +13,7 @@ import java.util.Map;
 @Component
 @Slf4j
 public class JwtUtil {
-    private static String JWT_SECRET = "lodaaaaaa";
+    private static String JWT_SECRET = "active-subjects";
 
     //Thời gian có hiệu lực của chuỗi jwt
     private final long JWT_EXPIRATION = 604800000L;
@@ -48,7 +48,6 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS512, JWT_SECRET);
         String token = builder.compact();
         RedisUtil.INSTANCE.sadd(JWT_SECRET, subject);
-
         return token;
     }
     public static String parseToken(HttpServletRequest httpServletRequest, String jwtTokenCookieName, String signingKey){
@@ -68,5 +67,9 @@ public class JwtUtil {
     public Boolean validateToken(String token, UserDetails userDetails){
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+    public static void invalidateRelatedTokens(HttpServletRequest httpServletRequest) {
+        System.out.println(httpServletRequest);
+        RedisUtil.INSTANCE.srem(JWT_SECRET, (String) httpServletRequest.getAttribute("username"));
     }
 }

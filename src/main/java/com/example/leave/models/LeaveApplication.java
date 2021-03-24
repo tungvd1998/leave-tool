@@ -17,7 +17,6 @@ public class LeaveApplication {
     private String reason;
     private Date created;
     private String status;
-
     private Integer policyId;
     private Integer userId;
 }

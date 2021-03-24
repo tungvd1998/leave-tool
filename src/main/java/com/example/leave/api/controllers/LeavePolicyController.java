@@ -20,37 +20,37 @@ public class LeavePolicyController {
 
     @GetMapping("/getAllPolicies")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MEMBER')")
-    public List<LeavePolicy> getAllPolicy(){
+    public List<LeavePolicy> getAllPolicy() {
         List<LeavePolicy> listPolicy = leavePolicyService.getListLeavePolicy();
         return listPolicy;
     }
 
     @PostMapping("/createPolicy")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> createPolicy(@RequestBody LeavePolicy leavePolicy) throws Exception{
+    public ResponseEntity<?> createPolicy(@RequestBody LeavePolicy leavePolicy) throws Exception {
         return new ResponseEntity<LeavePolicy>(leavePolicyService.create(leavePolicy), HttpStatus.OK);
     }
 
     @GetMapping("/getPolicyById/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MEMBER')")
-    public ResponseEntity<LeavePolicy> getPolicyById(@PathVariable Integer id){
-        try{
+    public ResponseEntity<LeavePolicy> getPolicyById(@PathVariable Integer id) {
+        try {
             LeavePolicy leavePolicy = leavePolicyService.getLeavePolicyById(id);
             return new ResponseEntity<LeavePolicy>(leavePolicy, HttpStatus.OK);
-        } catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return new ResponseEntity<LeavePolicy>(HttpStatus.NOT_FOUND);
         }
     }
 
     @PostMapping(value = "/updatePolicy")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> updatePolicy(@RequestBody LeavePolicy leavePolicy) throws Exception{
+    public ResponseEntity<?> updatePolicy(@RequestBody LeavePolicy leavePolicy) throws Exception {
         return new ResponseEntity<LeavePolicy>(leavePolicyService.update(leavePolicy), HttpStatus.OK);
     }
 
     @PostMapping("/deletePolicy")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> delete(@RequestBody LeavePolicy leavePolicy){
+    public ResponseEntity<?> delete(@RequestBody LeavePolicy leavePolicy) {
         return new ResponseEntity<Integer>(leavePolicyService.delete(leavePolicy), HttpStatus.OK);
     }
 }

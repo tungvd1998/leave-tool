@@ -17,7 +17,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     private LeaveApplicationRepository leaveApplicationRepository;
 
     @Override
-    public LeaveApplication create(LeaveApplication leaveApplication) throws Exception{
+    public LeaveApplication create(LeaveApplication leaveApplication) throws Exception {
         leaveApplication.setCreated(new Date());
         try {
             return leaveApplicationRepository.save(leaveApplication);
@@ -25,11 +25,12 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
             throw new Exception("Fail", e);
         }
     }
+
     @Override
     public List<LeaveApplication> getByUserId(Integer userId) throws Exception {
         List<LeaveApplication> listLeaveApplication = leaveApplicationRepository.getLeaveApplicationByUserId(userId);
-        if(listLeaveApplication == null){
-            throw new  Exception("User not found with userId: " + userId);
+        if (listLeaveApplication == null) {
+            throw new Exception("User not found with userId: " + userId);
         }
         return listLeaveApplication;
     }

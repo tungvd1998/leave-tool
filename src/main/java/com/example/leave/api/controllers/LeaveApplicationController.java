@@ -16,16 +16,15 @@ public class LeaveApplicationController {
     private LeaveApplicationService leaveApplicationService;
 
     @PostMapping("/createApplication")
-    public ResponseEntity<?> createApplication(@RequestBody LeaveApplication leaveApplication) throws Exception{
+    public ResponseEntity<?> createApplication(@RequestBody LeaveApplication leaveApplication) throws Exception {
         return new ResponseEntity<LeaveApplication>(leaveApplicationService.create(leaveApplication), HttpStatus.OK);
     }
 
     @GetMapping("/getApplicationByUserId/{userId}")
-    public List<LeaveApplication> getApplicationByUserId(@PathVariable Integer userId) throws Exception{
+    public List<LeaveApplication> getApplicationByUserId(@PathVariable Integer userId) throws Exception {
         List<LeaveApplication> listLeaveApplication = leaveApplicationService.getByUserId(userId);
         return listLeaveApplication;
     }
-
 
 
 }

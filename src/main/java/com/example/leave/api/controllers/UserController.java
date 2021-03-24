@@ -14,6 +14,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -33,62 +35,60 @@ public class UserController {
     private UserServiceImpl jwtUserDetailsService;
 
     @PostMapping("/user/register")
-    public User register(@RequestBody User user){
+    public User register(@RequestBody User user) {
         return userService.createUser(user);
     }
 
 
     @PostMapping(value = "/user/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest, HttpServletResponse httpServletResponse) throws Exception {
 
         authenticationService.authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
-
         final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 
-        return ResponseEntity.ok(new JwtResponse(userService.loginUser(userDetails)));
+        return ResponseEntity.ok(new JwtResponse(userService.loginUser(userDetails, httpServletResponse)));
     }
 
-    @GetMapping("/hello")
-    public ResponseEntity<String> getContent(){
-        return new ResponseEntity<>("Hello", HttpStatus.OK);
+    @PostMapping("/user/logout")
+    public ResponseEntity<?> deleteAuthenticationToken(@RequestBody JwtRequest authenticationRequest, HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest) throws Exception {
+        authenticationService.authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+        String username = authenticationRequest.getUsername();
+        httpServletRequest.setAttribute("username", username);
+        return ResponseEntity.ok(new JwtResponse(userService.logoutUser(httpServletRequest, httpServletResponse)));
     }
-
     @GetMapping("/user")
-    public List<User> list(){
+    public List<User> list() {
         return userService.listAllUser();
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<User> get(@PathVariable Integer id){
-        try{
+    public ResponseEntity<User> get(@PathVariable Integer id) {
+        try {
             User user = userService.getByIdUser(id);
-            System.out.println("sssssssss");
             return new ResponseEntity<User>(user, HttpStatus.OK);
-        }catch(NoSuchElementException e)
-        {
-            System.out.println("lllllllllll");
+        } catch (NoSuchElementException e) {
             return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
         }
     }
+
     @PostMapping("/user/update/{id}")
-    public ResponseEntity<?> update(@RequestBody User user, @PathVariable Integer id)
-    {
+    public ResponseEntity<?> update(@RequestBody User user, @PathVariable Integer id) {
         try {
             User existUser = userService.getByIdUser(id);
             userService.saveUser(user);
             return new ResponseEntity<>(HttpStatus.OK);
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
     @PostMapping("/user/delete/{id}")
-    public ResponseEntity<?> delete(@RequestBody User user, @PathVariable Integer id)
-    {
+    public ResponseEntity<?> delete(@RequestBody User user, @PathVariable Integer id) {
         try {
             User existUser = userService.getByIdUser(id);
             userService.deleteUser(user);
             return new ResponseEntity<>(HttpStatus.OK);
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

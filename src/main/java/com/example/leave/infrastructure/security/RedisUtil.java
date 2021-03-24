@@ -18,11 +18,13 @@ public enum RedisUtil {
         try{
             jedis = pool.getResource();
             jedis.sadd(key, value);
+            System.out.println(key +"====="+value );
         } finally {
             if (jedis != null) {
                 jedis.close();
             }
         }
+        System.out.println("llllllllllllllllllllllllllllllllllllllllllll");
     }
 
     public void srem(String key, String value) {
