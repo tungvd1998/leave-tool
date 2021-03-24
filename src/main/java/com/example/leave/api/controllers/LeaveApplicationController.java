@@ -1,5 +1,6 @@
 package com.example.leave.api.controllers;
 
+import com.example.leave.api.forms.LeaveApplicationCreateForm;
 import com.example.leave.models.LeaveApplication;
 import com.example.leave.services.LeaveApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +16,12 @@ public class LeaveApplicationController {
     @Autowired
     private LeaveApplicationService leaveApplicationService;
 
-    @PostMapping("/createApplication")
-    public ResponseEntity<?> createApplication(@RequestBody LeaveApplication leaveApplication) throws Exception{
-        return new ResponseEntity<>(leaveApplicationService.createLeaveApplication(leaveApplication), HttpStatus.OK);
+    @PostMapping("/create")
+    public ResponseEntity<?> createApplication(@RequestBody LeaveApplicationCreateForm leaveApplicationCreateForm){
+        return new ResponseEntity<>(leaveApplicationService.createLeaveApplication(leaveApplicationCreateForm), HttpStatus.OK);
     }
 
-    @GetMapping("/getApplicationByUserId/{userId}")
+    @GetMapping("/{userId}")
     public List<LeaveApplication> getApplicationByUserId(@PathVariable Integer userId) throws Exception{
         List<LeaveApplication> listLeaveApplication = leaveApplicationService.getByUserId(userId);
         return listLeaveApplication;

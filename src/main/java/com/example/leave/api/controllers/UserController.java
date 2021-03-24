@@ -48,11 +48,6 @@ public class UserController {
         return ResponseEntity.ok(new JwtResponse(userService.loginUser(userDetails)));
     }
 
-    @GetMapping("/hello")
-    public ResponseEntity<String> getContent(){
-        return new ResponseEntity<>("Hello", HttpStatus.OK);
-    }
-
     @GetMapping("/user")
     public List<User> list(){
         return userService.listAllUser();

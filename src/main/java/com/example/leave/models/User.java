@@ -39,7 +39,8 @@ public class User implements Serializable {
 
     private Set<Role> roles;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<LeaveApplication> leaveApplications;
+//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
+//            cascade = CascadeType.ALL)
+//    private Set<LeaveApplication> leaveApplications;
 
 }

@@ -1,5 +1,6 @@
 package com.example.leave.services;
 
+import com.example.leave.api.forms.LeaveApplicationCreateForm;
 import com.example.leave.models.LeaveApplication;
 
 import java.util.List;
@@ -11,6 +12,6 @@ public interface LeaveApplicationService {
 
     List<LeaveApplication> getByUserId(Integer userId) throws Exception;
 
-    LeaveApplication createLeaveApplication(LeaveApplication leaveApplication);
+    LeaveApplication createLeaveApplication(LeaveApplicationCreateForm leaveApplicationCreateForm);
 
 }

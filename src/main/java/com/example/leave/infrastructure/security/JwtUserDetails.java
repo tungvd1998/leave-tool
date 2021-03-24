@@ -1,9 +1,14 @@
 package com.example.leave.infrastructure.security;
 
+import com.example.leave.models.Role;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 public class JwtUserDetails extends User {
     private Integer id;
