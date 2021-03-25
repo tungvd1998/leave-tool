@@ -10,7 +10,6 @@ import com.example.leave.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,13 +33,13 @@ public class UserController {
     @Autowired
     private UserServiceImpl jwtUserDetailsService;
 
-    @PostMapping("/user/register")
+    @PostMapping("/register")
     public User register(@RequestBody User user) {
         return userService.createUser(user);
     }
 
 
-    @PostMapping(value = "/user/login")
+    @PostMapping(value = "/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest, HttpServletResponse httpServletResponse) throws Exception {
 
         authenticationService.authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
@@ -49,13 +48,14 @@ public class UserController {
         return ResponseEntity.ok(new JwtResponse(userService.loginUser(userDetails, httpServletResponse)));
     }
 
-    @PostMapping("/user/logout")
+    @PostMapping("/logout")
     public ResponseEntity<?> deleteAuthenticationToken(@RequestBody JwtRequest authenticationRequest, HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest) throws Exception {
         authenticationService.authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
         String username = authenticationRequest.getUsername();
         httpServletRequest.setAttribute("username", username);
         return ResponseEntity.ok(new JwtResponse(userService.logoutUser(httpServletRequest, httpServletResponse)));
     }
+
     @GetMapping("/user")
     public List<User> list() {
         return userService.listAllUser();
@@ -72,11 +72,17 @@ public class UserController {
     }
 
     @PostMapping("/user/update/{id}")
-    public ResponseEntity<?> update(@RequestBody User user, @PathVariable Integer id) {
+    public ResponseEntity<?> update(@RequestBody User user, @PathVariable Integer id){
         try {
             User existUser = userService.getByIdUser(id);
-            userService.saveUser(user);
-            return new ResponseEntity<>(HttpStatus.OK);
+            try{
+                userService.saveUser(user);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }catch (Exception internalError)
+            {
+                internalError.printStackTrace();
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
