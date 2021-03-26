@@ -3,6 +3,7 @@ package com.example.leave.infrastructure.security;
 import com.example.leave.models.User;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
@@ -14,10 +15,12 @@ import java.util.Map;
 @Component
 @Slf4j
 public class JwtUtil {
-    private final String JWT_SECRET = "lodaaaaaa";
 
-    //Thời gian có hiệu lực của chuỗi jwt
-    private final long JWT_EXPIRATION = 604800000L;
+    @Value("${app.jwtSecret}")
+    private String JWT_SECRET;
+
+    @Value("${app.jwtExpirationInMs}")
+    private long JWT_EXPIRATION;
 
     public String getUsernameFromToken(String token){
         final Claims claims = getAllClaimsFromToken(token);
@@ -45,7 +48,7 @@ public class JwtUtil {
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
                 .signWith(SignatureAlgorithm.HS512, JWT_SECRET).compact();
     }
 

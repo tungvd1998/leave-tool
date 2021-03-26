@@ -5,7 +5,6 @@ import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Data
@@ -16,9 +15,6 @@ public class Role implements Serializable {
 
     private Integer id;
     private String name;
-
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users;
 
     @Override
     public int hashCode() {

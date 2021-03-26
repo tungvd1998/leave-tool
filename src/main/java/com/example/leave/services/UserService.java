@@ -1,10 +1,7 @@
 package com.example.leave.services;
 
 import com.example.leave.models.User;
-import com.example.leave.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
