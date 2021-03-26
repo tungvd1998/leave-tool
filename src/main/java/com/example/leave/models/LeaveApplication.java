@@ -1,8 +1,6 @@
 package com.example.leave.models;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,15 +19,13 @@ public class LeaveApplication implements Serializable {
     private Date created;
     private String status;
 
-//    private Integer userId;
-//    private Integer policyId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-//    private Integer userId;
+
     @ManyToOne
     @JoinColumn(name = "policy_id", nullable = false)
     private LeavePolicy leavePolicy;
-    //    private Integer policyId;
+
 }

@@ -21,12 +21,10 @@ public class LeaveApplicationController {
         return new ResponseEntity<>(leaveApplicationService.createLeaveApplication(leaveApplicationCreateForm), HttpStatus.OK);
     }
 
-    @GetMapping("/{userId}")
-    public List<LeaveApplication> getApplicationByUserId(@PathVariable Integer userId) throws Exception{
-        List<LeaveApplication> listLeaveApplication = leaveApplicationService.getByUserId(userId);
+    @GetMapping("/history")
+    public List<LeaveApplication> getApplicationHistory(){
+        List<LeaveApplication> listLeaveApplication = leaveApplicationService.getLeaveApplicationHistory();
         return listLeaveApplication;
     }
-
-
 
 }

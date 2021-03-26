@@ -4,9 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -38,9 +36,5 @@ public class User implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
 
     private Set<Role> roles;
-
-//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
-//            cascade = CascadeType.ALL)
-//    private Set<LeaveApplication> leaveApplications;
 
 }

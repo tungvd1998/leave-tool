@@ -10,13 +10,16 @@ import com.example.leave.repositories.LeaveApplicationRepository;
 import com.example.leave.repositories.LeavePolicyRepository;
 import com.example.leave.repositories.UserRepository;
 import com.example.leave.services.LeaveApplicationService;
+import com.example.leave.utils.DateDiff;
 import com.example.leave.utils.ExceptionConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class LeaveApplicationServiceImpl implements LeaveApplicationService {
@@ -31,45 +34,35 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     private UserRepository userRepository;
 
     @Override
-    public LeaveApplication create(LeaveApplication leaveApplication) throws Exception {
-        leaveApplication.setCreated(new Date());
-        try {
-            return leaveApplicationRepository.save(leaveApplication);
-        } catch (Exception e) {
-            throw new Exception("Fail", e);
-        }
-    }
-
-    @Override
-    public List<LeaveApplication> getByUserId(Integer userId) throws Exception {
-        List<LeaveApplication> listLeaveApplication = leaveApplicationRepository.getLeaveApplicationByUserId(userId);
-        if (listLeaveApplication == null) {
-            throw new Exception("User not found with userId: " + userId);
-        }
-        return listLeaveApplication;
-    }
-
-    private MyUserDetails myUserDetails;
-
-    @Override
+    @Transactional
     public LeaveApplication createLeaveApplication(LeaveApplicationCreateForm leaveApplicationCreateForm) {
         Optional<LeavePolicy> leavePolicyDb = leavePolicyRepository.findById(leaveApplicationCreateForm.getPolicyId());
         if (!leavePolicyDb.isPresent()) {
             throw new DataNotFoundException(ExceptionConstants.LEAVE_TYPE_NAME_NOT_VALID);
         }
-        LeaveApplication leaveApplication = new LeaveApplication();
-        String employeeId = ExtractUserAuthentication.getCurrentUser().getUsername();
-//        String employeeUsername = myUserDetails.getUsername();
-//        Integer employeeId = userRepository.findIdByUsername(employeeUsername);
+        else {
+            LeaveApplication leaveApplication = new LeaveApplication();
+            String employeeName = ExtractUserAuthentication.getCurrentUser().getUsername();
+            User user = userRepository.findByUsername(employeeName);
+            leaveApplication.setUser(user);
+            leaveApplication.setStatus(leaveApplicationCreateForm.getStatus());
+            if (DateDiff.getDateDiff(leaveApplicationCreateForm.getFromDate(), leaveApplicationCreateForm.getToDate(), TimeUnit.MINUTES) > leavePolicyDb.get().getDuration()){
+                throw new DataNotFoundException(ExceptionConstants.LEAVE_DURATION_INVALID);
+            }
+            leaveApplication.setFromDate(leaveApplicationCreateForm.getFromDate());
+            leaveApplication.setToDate(leaveApplicationCreateForm.getToDate());
+            leaveApplication.setReason(leaveApplicationCreateForm.getReason());
+            leaveApplication.setCreated(new Date());
+            leaveApplication.setLeavePolicy(leavePolicyDb.get());
 
-        User user = userRepository.findByUsername(employeeId);
-        leaveApplication.setUser(user);
-        leaveApplication.setStatus(leaveApplicationCreateForm.getStatus());
-        leaveApplication.setFromDate(leaveApplicationCreateForm.getFromDate());
-        leaveApplication.setReason(leaveApplicationCreateForm.getReason());
-        leaveApplication.setToDate(leaveApplicationCreateForm.getToDate());
-
-        return leaveApplicationRepository.save(leaveApplication);
+            return leaveApplicationRepository.save(leaveApplication);
+        }
     }
 
+    @Override
+    public List<LeaveApplication> getLeaveApplicationHistory(){
+        String employeeName = ExtractUserAuthentication.getCurrentUser().getUsername();
+//        User user = userRepository.findByUsername(employeeName);
+        return leaveApplicationRepository.getByUsername(employeeName);
+    }
 }

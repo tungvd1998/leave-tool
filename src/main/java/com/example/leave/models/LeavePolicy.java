@@ -1,14 +1,10 @@
 package com.example.leave.models;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 
 @Entity
 @Data

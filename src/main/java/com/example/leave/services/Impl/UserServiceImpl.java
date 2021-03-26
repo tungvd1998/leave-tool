@@ -1,5 +1,6 @@
 package com.example.leave.services.Impl;
 
+import com.example.leave.infrastructure.security.JwtUserDetails;
 import com.example.leave.infrastructure.security.JwtUtil;
 import com.example.leave.models.User;
 import com.example.leave.repositories.UserRepository;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.Date;
 import java.util.HashSet;
@@ -44,6 +46,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
+//        return JwtUserDetails.create(user);
         return new MyUserDetails(user);
     }
 

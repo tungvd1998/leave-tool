@@ -19,8 +19,6 @@ public class LeaveApplicationCreateForm {
 
     private String reason;
 
-    private Date created;
-
     private String status;
 
     private Integer policyId;

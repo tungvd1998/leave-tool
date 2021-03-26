@@ -8,10 +8,8 @@ import java.util.List;
 
 public interface LeaveApplicationService {
 
-    LeaveApplication create(LeaveApplication leaveApplication) throws Exception;
-
-    List<LeaveApplication> getByUserId(Integer userId) throws Exception;
-
     LeaveApplication createLeaveApplication(LeaveApplicationCreateForm leaveApplicationCreateForm);
+
+    List<LeaveApplication> getLeaveApplicationHistory();
 
 }
