@@ -2,6 +2,7 @@ package com.example.leave.infrastructure.security;
 
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +14,11 @@ import java.util.Map;
 @Component
 @Slf4j
 public class JwtUtil {
-    private static String JWT_SECRET = "active-subjects";
+    @Value("${app.jwtSecret}")
+    private String JWT_SECRET;
 
-    //Thời gian có hiệu lực của chuỗi jwt
-    private final long JWT_EXPIRATION = 604800000L;
+    @Value("${app.jwtExpirationInMs}")
+    private long JWT_EXPIRATION;
 
     public String getUsernameFromToken(String token){
         final Claims claims = getAllClaimsFromToken(token);

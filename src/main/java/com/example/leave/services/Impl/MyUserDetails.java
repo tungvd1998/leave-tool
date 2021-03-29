@@ -16,6 +16,8 @@ public class MyUserDetails implements UserDetails {
     @Autowired
     private User user;
 
+    private Integer id;
+
     public MyUserDetails(User user) {
         this.user = user;
     }

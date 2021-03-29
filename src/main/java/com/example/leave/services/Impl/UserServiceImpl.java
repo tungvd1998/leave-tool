@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
@@ -33,7 +34,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private AuthenticationServiceImpl authenticationService;
-
+  
     @Override
     public User createUser(User user){
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));

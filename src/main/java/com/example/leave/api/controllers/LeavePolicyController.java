@@ -18,21 +18,19 @@ public class LeavePolicyController {
     @Autowired
     private LeavePolicyService leavePolicyService;
 
-    @GetMapping("/getAllPolicies")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MEMBER')")
-    public List<LeavePolicy> getAllPolicy() {
+
+    @GetMapping("/getAll")
+    public List<LeavePolicy> getAllPolicy(){
         List<LeavePolicy> listPolicy = leavePolicyService.getListLeavePolicy();
         return listPolicy;
     }
 
-    @PostMapping("/createPolicy")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/create")
     public ResponseEntity<?> createPolicy(@RequestBody LeavePolicy leavePolicy) throws Exception {
         return new ResponseEntity<LeavePolicy>(leavePolicyService.create(leavePolicy), HttpStatus.OK);
     }
 
-    @GetMapping("/getPolicyById/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MEMBER')")
+    @GetMapping("/{id}")
     public ResponseEntity<LeavePolicy> getPolicyById(@PathVariable Integer id) {
         try {
             LeavePolicy leavePolicy = leavePolicyService.getLeavePolicyById(id);
@@ -42,14 +40,12 @@ public class LeavePolicyController {
         }
     }
 
-    @PostMapping(value = "/updatePolicy")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping(value = "/update")
     public ResponseEntity<?> updatePolicy(@RequestBody LeavePolicy leavePolicy) throws Exception {
         return new ResponseEntity<LeavePolicy>(leavePolicyService.update(leavePolicy), HttpStatus.OK);
     }
 
-    @PostMapping("/deletePolicy")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody LeavePolicy leavePolicy) {
         return new ResponseEntity<Integer>(leavePolicyService.delete(leavePolicy), HttpStatus.OK);
     }

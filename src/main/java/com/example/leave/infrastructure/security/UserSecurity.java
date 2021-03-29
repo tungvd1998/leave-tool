@@ -50,7 +50,7 @@ public class UserSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.csrf().disable().authorizeRequests().antMatchers("/sys/v1/login", "/sys/v1/register","/sys/v1/logout","/email/send","/sys/v1/user").permitAll()
                 .antMatchers("sys/v1/leavePolicies/getAllPolicies").hasAnyAuthority("ADMIN", "MEMBER")
-                .antMatchers("sys/v1/leavePolicies/createPolicy", "sys/v1/leavePolicies/updatePolicy").hasAuthority("ADMIN")
+                .antMatchers( "sys/v1/leavePolicies/createPolicy", "sys/v1/leavePolicies/updatePolicy").hasAuthority("ADMIN")
         .anyRequest().authenticated()
         .and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);;
         httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -48,6 +48,7 @@ public class UserController {
         return ResponseEntity.ok(new JwtResponse(userService.loginUser(userDetails, httpServletResponse)));
     }
 
+
     @PostMapping("/logout")
     public ResponseEntity<?> deleteAuthenticationToken(@RequestBody JwtRequest authenticationRequest, HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest) throws Exception {
         authenticationService.authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
