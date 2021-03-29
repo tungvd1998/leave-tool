@@ -1,13 +1,12 @@
 package com.example.leave.infrastructure.security;
 
-import com.example.leave.models.User;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +14,6 @@ import java.util.Map;
 @Component
 @Slf4j
 public class JwtUtil {
-
     @Value("${app.jwtSecret}")
     private String JWT_SECRET;
 
@@ -47,13 +45,33 @@ public class JwtUtil {
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
-                .signWith(SignatureAlgorithm.HS512, JWT_SECRET).compact();
+        JwtBuilder builder = Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION * 1000))
+                .signWith(SignatureAlgorithm.HS512, JWT_SECRET);
+        String token = builder.compact();
+        RedisUtil.INSTANCE.sadd(JWT_SECRET, subject);
+        return token;
+    }
+    public static String parseToken(HttpServletRequest httpServletRequest, String jwtTokenCookieName, String signingKey){
+        String token = CookieUtil.getValue(httpServletRequest, jwtTokenCookieName);
+        if(token == null) {
+            return null;
+        }
+
+        String subject = Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token).getBody().getSubject();
+        if (!RedisUtil.INSTANCE.sismember(JWT_SECRET, subject)) {
+            return null;
+        }
+
+        return subject;
     }
 
     public Boolean validateToken(String token, UserDetails userDetails){
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+    public static void invalidateRelatedTokens(HttpServletRequest httpServletRequest) {
+        System.out.println(httpServletRequest);
+        RedisUtil.INSTANCE.srem(JWT_SECRET, (String) httpServletRequest.getAttribute("username"));
     }
 }

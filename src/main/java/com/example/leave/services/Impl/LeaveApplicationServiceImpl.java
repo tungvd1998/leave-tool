@@ -54,7 +54,6 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
             leaveApplication.setReason(leaveApplicationCreateForm.getReason());
             leaveApplication.setCreated(new Date());
             leaveApplication.setLeavePolicy(leavePolicyDb.get());
-
             return leaveApplicationRepository.save(leaveApplication);
         }
     }
@@ -62,7 +61,6 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     @Override
     public List<LeaveApplication> getLeaveApplicationHistory(){
         String employeeName = ExtractUserAuthentication.getCurrentUser().getUsername();
-//        User user = userRepository.findByUsername(employeeName);
         return leaveApplicationRepository.getByUsername(employeeName);
     }
 }
