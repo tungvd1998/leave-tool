@@ -1,13 +1,13 @@
 package com.example.leave.api.controllers;
 
 import com.example.leave.api.forms.LeaveApplicationCreateForm;
+import com.example.leave.api.view.ResponseObject;
 import com.example.leave.models.LeaveApplication;
 import com.example.leave.services.LeaveApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,14 +17,19 @@ public class LeaveApplicationController {
     private LeaveApplicationService leaveApplicationService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createApplication(@RequestBody LeaveApplicationCreateForm leaveApplicationCreateForm){
-        return new ResponseEntity<>(leaveApplicationService.createLeaveApplication(leaveApplicationCreateForm), HttpStatus.OK);
+    public ResponseObject createApplication(@RequestBody @Valid LeaveApplicationCreateForm leaveApplicationCreateForm){
+        return new ResponseObject(leaveApplicationService.createLeaveApplication(leaveApplicationCreateForm));
     }
 
+//    @PostMapping("/update")
+//    public ResponseObject updateApplication(@RequestBody @Valid LeaveApplication leaveApplication){
+//        return new ResponseObject(leaveApplicationService.update(leaveApplication));
+//    }
+
     @GetMapping("/history")
-    public List<LeaveApplication> getApplicationHistory(){
+    public ResponseObject getApplicationHistory(){
         List<LeaveApplication> listLeaveApplication = leaveApplicationService.getLeaveApplicationHistory();
-        return listLeaveApplication;
+        return new ResponseObject(listLeaveApplication);
     }
 
 }

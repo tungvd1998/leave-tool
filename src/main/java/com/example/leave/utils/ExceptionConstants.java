@@ -1,6 +1,10 @@
 package com.example.leave.utils;
 
 public class ExceptionConstants {
+    // Errors
+    public static final String ERRORS = "Errors";
+    public static final String SUCCESS = "Success";
+
     // Employee Exception Constant
     public static final String EMPLOYEE_RECORD_NOT_FOUND = "Employee doesn't exists";
     public static final String EMPLOYEE_USERNAME_NOT_VALID = "Employee username not valid";
@@ -17,7 +21,10 @@ public class ExceptionConstants {
 
     // Duration leave Exception Constant
     public static final String LEAVE_DURATION_INVALID = "Leave duration invalid";
+    public static final String LEAVE_DURATION_TIME_OUT = "LEAVE DURATION TIMEOUT";
+    public static final String DATE_LEAVE_VALID = "Date leave valid";
 
     // Utils error
     public static final String DATE_CANT_BE_PARSED = "Date can't be parsed";
+
 }

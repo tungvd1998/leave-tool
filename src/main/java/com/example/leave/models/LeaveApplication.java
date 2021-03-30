@@ -19,6 +19,8 @@ public class LeaveApplication implements Serializable {
     private Date created;
     private String status;
 
+    private Long leaveDuration;
+
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

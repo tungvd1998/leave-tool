@@ -12,4 +12,8 @@ public interface LeaveApplicationService {
 
     List<LeaveApplication> getLeaveApplicationHistory();
 
+    LeaveApplication getById(Integer id);
+
+//    LeaveApplication update(LeaveApplication leaveApplication);
+
 }

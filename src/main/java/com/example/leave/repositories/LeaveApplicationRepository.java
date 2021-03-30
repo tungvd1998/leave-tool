@@ -16,4 +16,12 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
             " LEFT JOIN User u ON la.user = u.id" +
             " WHERE u.username = :username")
     List<LeaveApplication> getByUsername(@Param("username") String username);
+
+//    @Query(value = " SELECT leave_duration " +
+//            " FROM LeaveApplication la " +
+//            " INNER JOIN User u ON la.user = u.id" +
+//            " WHERE u.username = :username")
+//
+//    Integer calculateLeaveDurationByUsername(@Param("username") String username);
+
 }

@@ -1,18 +1,15 @@
 package com.example.leave.api.forms;
 
-import com.example.leave.infrastructure.constant.ErrorCode;
-import com.example.leave.models.LeavePolicy;
-import com.example.leave.models.User;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.util.Date;
 
 /**
  * @author tungvd
  */
 @Data
-public class LeaveApplicationCreateForm {
+public class LeaveApplicationUpdateForm {
+    private Integer id;
 
     private Date fromDate;
 
@@ -23,6 +20,5 @@ public class LeaveApplicationCreateForm {
     private String status;
 
     private Integer policyId;
-
 
 }
