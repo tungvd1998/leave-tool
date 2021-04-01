@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("sys/v1/leaveApplications")
+@RequestMapping("/leaveApplication")
 public class LeaveApplicationController {
     @Autowired
     private LeaveApplicationService leaveApplicationService;
 
-    @PostMapping("/create")
+    @RequestMapping(value = {"/create"}, method = RequestMethod.POST)
     public ResponseEntity<?> createApplication(@RequestBody LeaveApplicationCreateForm leaveApplicationCreateForm){
         return new ResponseEntity<>(leaveApplicationService.createLeaveApplication(leaveApplicationCreateForm), HttpStatus.OK);
     }
 
-    @GetMapping("/history")
+    @RequestMapping(value = {"/history"}, method = RequestMethod.GET)
     public List<LeaveApplication> getApplicationHistory(){
         List<LeaveApplication> listLeaveApplication = leaveApplicationService.getLeaveApplicationHistory();
         return listLeaveApplication;

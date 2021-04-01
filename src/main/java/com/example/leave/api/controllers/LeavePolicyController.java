@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("sys/v1/leavePolicies")
+@RequestMapping("/leavePolicy")
 public class LeavePolicyController {
 
     @Autowired
@@ -25,10 +25,11 @@ public class LeavePolicyController {
         return listPolicy;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createPolicy(@RequestBody LeavePolicy leavePolicy) throws Exception {
-        return new ResponseEntity<LeavePolicy>(leavePolicyService.create(leavePolicy), HttpStatus.OK);
-    }
+//    @PostMapping("/create")
+//    @PreAuthorize("@appAuthorizer.authorize(authentication, 'CREATE', this)")
+//    public ResponseEntity<?> createPolicy(@RequestBody LeavePolicy leavePolicy) throws Exception {
+//        return new ResponseEntity<LeavePolicy>(leavePolicyService.create(leavePolicy), HttpStatus.OK);
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<LeavePolicy> getPolicyById(@PathVariable Integer id) {
@@ -40,13 +41,15 @@ public class LeavePolicyController {
         }
     }
 
-    @PostMapping(value = "/update")
-    public ResponseEntity<?> updatePolicy(@RequestBody LeavePolicy leavePolicy) throws Exception {
-        return new ResponseEntity<LeavePolicy>(leavePolicyService.update(leavePolicy), HttpStatus.OK);
-    }
-
-    @PostMapping("/delete")
-    public ResponseEntity<?> delete(@RequestBody LeavePolicy leavePolicy) {
-        return new ResponseEntity<Integer>(leavePolicyService.delete(leavePolicy), HttpStatus.OK);
-    }
+//    @PostMapping(value = "/update")
+//    @PreAuthorize("@appAuthorizer.authorize(authentication, 'UPDATE', this)")
+//    public ResponseEntity<?> updatePolicy(@RequestBody LeavePolicy leavePolicy) throws Exception {
+//        return new ResponseEntity<LeavePolicy>(leavePolicyService.update(leavePolicy), HttpStatus.OK);
+//    }
+//
+//    @PostMapping("/delete")
+//    @PreAuthorize("@appAuthorizer.authorize(authentication, 'DELETE', this)")
+//    public ResponseEntity<?> delete(@RequestBody LeavePolicy leavePolicy) {
+//        return new ResponseEntity<Integer>(leavePolicyService.delete(leavePolicy), HttpStatus.OK);
+//    }
 }

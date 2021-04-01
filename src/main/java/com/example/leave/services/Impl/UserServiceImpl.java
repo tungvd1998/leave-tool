@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 import javax.servlet.http.HttpServletRequest;
@@ -74,7 +73,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public String logoutUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        JwtUtil.invalidateRelatedTokens(httpServletRequest);
+        jwtUtil.invalidateRelatedTokens(httpServletRequest);
         CookieUtil.clear(httpServletResponse, jwtTokenCookieName);
         return "logout....";
     }

@@ -7,9 +7,12 @@ import com.example.leave.models.User;
 import com.example.leave.services.AuthenticationService;
 import com.example.leave.services.Impl.UserServiceImpl;
 import com.example.leave.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +22,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("sys/v1")
+@CrossOrigin(origins = "*")
+@RequestMapping("/leave")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -33,13 +37,12 @@ public class UserController {
     @Autowired
     private UserServiceImpl jwtUserDetailsService;
 
-    @PostMapping("/register")
+    @RequestMapping(value = {"/register"}, method = RequestMethod.POST)
     public User register(@RequestBody User user) {
         return userService.createUser(user);
     }
 
-
-    @PostMapping(value = "/login")
+    @RequestMapping(value = {"/login"}, method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest, HttpServletResponse httpServletResponse) throws Exception {
 
         authenticationService.authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
@@ -48,8 +51,7 @@ public class UserController {
         return ResponseEntity.ok(new JwtResponse(userService.loginUser(userDetails, httpServletResponse)));
     }
 
-
-    @PostMapping("/logout")
+    @RequestMapping(value = {"/logout"}, method = RequestMethod.POST)
     public ResponseEntity<?> deleteAuthenticationToken(@RequestBody JwtRequest authenticationRequest, HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest) throws Exception {
         authenticationService.authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
         String username = authenticationRequest.getUsername();
@@ -57,12 +59,7 @@ public class UserController {
         return ResponseEntity.ok(new JwtResponse(userService.logoutUser(httpServletRequest, httpServletResponse)));
     }
 
-    @GetMapping("/user")
-    public List<User> list() {
-        return userService.listAllUser();
-    }
-
-    @GetMapping("/user/{id}")
+    @RequestMapping(value = {"/user/get/{id}"}, method = RequestMethod.GET)
     public ResponseEntity<User> get(@PathVariable Integer id) {
         try {
             User user = userService.getByIdUser(id);
@@ -72,7 +69,8 @@ public class UserController {
         }
     }
 
-    @PostMapping("/user/update/{id}")
+
+    @RequestMapping(value = {"/user/update/{id}"}, method = RequestMethod.POST)
     public ResponseEntity<?> update(@RequestBody User user, @PathVariable Integer id){
         try {
             User existUser = userService.getByIdUser(id);
@@ -88,16 +86,16 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-    @PostMapping("/user/delete/{id}")
-    public ResponseEntity<?> delete(@RequestBody User user, @PathVariable Integer id) {
-        try {
-            User existUser = userService.getByIdUser(id);
-            userService.deleteUser(user);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
+//
+//    @PostMapping("/user/delete/{id}")
+//    public ResponseEntity<?> delete(@RequestBody User user, @PathVariable Integer id) {
+//        try {
+//            User existUser = userService.getByIdUser(id);
+//            userService.deleteUser(user);
+//            return new ResponseEntity<>(HttpStatus.OK);
+//        } catch (NoSuchElementException e) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//    }
 
 }
