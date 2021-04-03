@@ -15,6 +15,7 @@ public class ExceptionConstants {
     public static final String EMPLOYEE_LEAVE_RECORD_NOT_FOUND = "Employee leave record not found";
     public static final String EMPLOYEE_LEAVE_ACTION_ALREADY_TAKEN = "Action already taken on this leave request";
 
+
     // LeaveType Exception Constant
     public static final String LEAVE_TYPE_RECORD_NOT_FOUND = "Leave type not found";
     public static final String LEAVE_TYPE_NAME_NOT_VALID = "Leave type name not valid";
@@ -22,7 +23,10 @@ public class ExceptionConstants {
     // Duration leave Exception Constant
     public static final String LEAVE_DURATION_INVALID = "Leave duration invalid";
     public static final String LEAVE_DURATION_TIME_OUT = "LEAVE DURATION TIMEOUT";
-    public static final String DATE_LEAVE_VALID = "Date leave valid";
+    public static final String DATE_LEAVE_EXIST = "Date leave is exist";
+    public static final String DATE_LEAVE_ILLEGAL = "Date leave invalid";
+
+    // Leave Application Exception Constant
 
     // Utils error
     public static final String DATE_CANT_BE_PARSED = "Date can't be parsed";

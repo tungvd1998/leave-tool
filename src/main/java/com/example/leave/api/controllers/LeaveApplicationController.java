@@ -1,6 +1,7 @@
 package com.example.leave.api.controllers;
 
 import com.example.leave.api.forms.LeaveApplicationCreateForm;
+import com.example.leave.api.forms.LeaveApplicationUpdateForm;
 import com.example.leave.api.view.ResponseObject;
 import com.example.leave.models.LeaveApplication;
 import com.example.leave.services.LeaveApplicationService;
@@ -21,10 +22,10 @@ public class LeaveApplicationController {
         return new ResponseObject(leaveApplicationService.createLeaveApplication(leaveApplicationCreateForm));
     }
 
-//    @PostMapping("/update")
-//    public ResponseObject updateApplication(@RequestBody @Valid LeaveApplication leaveApplication){
-//        return new ResponseObject(leaveApplicationService.update(leaveApplication));
-//    }
+    @PostMapping("/update")
+    public ResponseObject updateApplication(@RequestBody @Valid LeaveApplicationUpdateForm leaveApplicationUpdateForm){
+        return new ResponseObject(leaveApplicationService.update(leaveApplicationUpdateForm));
+    }
 
     @GetMapping("/history")
     public ResponseObject getApplicationHistory(){

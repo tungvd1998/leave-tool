@@ -32,6 +32,7 @@ public class WebRestControllerAdvice {
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
         exceptionResponse.setCallerUrl(request.getRequestURI());
+        log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 
@@ -40,6 +41,7 @@ public class WebRestControllerAdvice {
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
         exceptionResponse.setCallerUrl(request.getRequestURI());
+        log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
