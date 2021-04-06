@@ -1,5 +1,7 @@
 package com.example.leave.services;
 
+import com.example.leave.api.forms.LeavePolicyCreateForm;
+import com.example.leave.api.forms.LeavePolicyUpdateForm;
 import com.example.leave.models.LeavePolicy;
 
 import java.util.List;
@@ -7,9 +9,9 @@ import java.util.List;
 public interface LeavePolicyService {
     List<LeavePolicy> getListLeavePolicy();
 
-    LeavePolicy create(LeavePolicy leavePolicy) throws Exception;
+    LeavePolicy create(LeavePolicyCreateForm LeavePolicyCreateForm);
 
-    LeavePolicy update(LeavePolicy leavePolicy) throws Exception;
+    LeavePolicy update(LeavePolicyUpdateForm leavePolicyUpdateForm);
 
     LeavePolicy getLeavePolicyById(Integer id);
 

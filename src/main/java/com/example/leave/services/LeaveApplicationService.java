@@ -17,4 +17,6 @@ public interface LeaveApplicationService {
 
     LeaveApplication update(LeaveApplicationUpdateForm leaveApplicationUpdateForm);
 
+    Integer delete(LeaveApplication leaveApplication);
+
 }

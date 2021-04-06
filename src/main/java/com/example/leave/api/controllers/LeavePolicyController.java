@@ -1,5 +1,7 @@
 package com.example.leave.api.controllers;
 
+import com.example.leave.api.forms.LeavePolicyCreateForm;
+import com.example.leave.api.forms.LeavePolicyUpdateForm;
 import com.example.leave.models.LeavePolicy;
 import com.example.leave.services.LeavePolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +27,11 @@ public class LeavePolicyController {
     }
 
     @PostMapping("/create")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> createPolicy(@RequestBody LeavePolicy leavePolicy) throws Exception{
-        return new ResponseEntity<LeavePolicy>(leavePolicyService.create(leavePolicy), HttpStatus.OK);
+    public ResponseEntity<?> createPolicy(@RequestBody LeavePolicyCreateForm leavePolicyCreateForm){
+        return new ResponseEntity<LeavePolicy>(leavePolicyService.create(leavePolicyCreateForm), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MEMBER')")
     public ResponseEntity<LeavePolicy> getPolicyById(@PathVariable Integer id){
         try{
             LeavePolicy leavePolicy = leavePolicyService.getLeavePolicyById(id);
@@ -42,13 +42,11 @@ public class LeavePolicyController {
     }
 
     @PostMapping(value = "/update")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> updatePolicy(@RequestBody LeavePolicy leavePolicy) throws Exception{
-        return new ResponseEntity<LeavePolicy>(leavePolicyService.update(leavePolicy), HttpStatus.OK);
+    public ResponseEntity<?> updatePolicy(@RequestBody LeavePolicyUpdateForm leavePolicyUpdateForm) throws Exception{
+        return new ResponseEntity<LeavePolicy>(leavePolicyService.update(leavePolicyUpdateForm), HttpStatus.OK);
     }
 
     @PostMapping("/delete")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> delete(@RequestBody LeavePolicy leavePolicy){
         return new ResponseEntity<Integer>(leavePolicyService.delete(leavePolicy), HttpStatus.OK);
     }

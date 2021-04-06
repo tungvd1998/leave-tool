@@ -14,6 +14,7 @@ import com.example.leave.services.LeaveApplicationService;
 import com.example.leave.utils.DateDiff;
 import com.example.leave.utils.ExceptionConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -34,17 +35,30 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     @Autowired
     private UserRepository userRepository;
 
+    @Value("${startWorkTime}")
+    private Integer startWorkTime;
+
+    @Value("${stopMorningWorkTime}")
+    private Integer stopMorningWorkTime;
+
+    @Value("${startAfternoonWorkTime}")
+    private Integer startAfternoonWorkTime;
+
+    @Value("${endWorkTime}")
+    private Integer endWorkTime;
+
     @Override
     @Transactional
     public LeaveApplication createLeaveApplication(LeaveApplicationCreateForm leaveApplicationCreateForm) {
         Optional<LeavePolicy> leavePolicyDb = leavePolicyRepository.findById(leaveApplicationCreateForm.getPolicyId());
         if (!leavePolicyDb.isPresent()) {
-            throw new DataNotFoundException(ExceptionConstants.LEAVE_TYPE_NAME_NOT_VALID);
+            throw new DataNotFoundException(ExceptionConstants.LEAVE_TYPE_NAME_INVALID);
         }
         else {
+            System.out.println(leaveApplicationCreateForm.getFromDate().getDate());
             String employeeName = ExtractUserAuthentication.getCurrentUser().getUsername();
             User user = userRepository.findByUsername(employeeName);
-            Integer leaveDuration = calculateLeaveDuration(employeeName, leaveApplicationCreateForm.getFromDate().getMonth() + 1);
+            Integer leaveDuration = calculateLeaveDurationFormDb(employeeName, leaveApplicationCreateForm.getFromDate().getMonth() + 1);
             if(leaveDuration >= leavePolicyDb.get().getDuration()){
                 throw new DataNotFoundException(ExceptionConstants.LEAVE_DURATION_TIME_OUT);
             }
@@ -52,6 +66,9 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
             leaveTime += DateDiff.getDateDiff(leaveApplicationCreateForm.getFromDate(), leaveApplicationCreateForm.getToDate(), TimeUnit.MINUTES);
             if(leaveTime > leavePolicyDb.get().getDuration() || (leaveTime + leaveDuration) > leavePolicyDb.get().getDuration()) {
                 throw new DataNotFoundException(ExceptionConstants.LEAVE_DURATION_INVALID);
+            }
+            if((leaveApplicationCreateForm.getFromDate().getHours() < startWorkTime || leaveApplicationCreateForm.getFromDate().getHours() > endWorkTime) || (leaveApplicationCreateForm.getToDate().getHours() < startWorkTime || leaveApplicationCreateForm.getToDate().getHours() > endWorkTime)){
+                throw new DataNotFoundException(ExceptionConstants.NOT_WORKING_TIME);
             }
             Date dateCreate = new Date();
             if ((leaveApplicationCreateForm.getFromDate()).compareTo(leaveApplicationCreateForm.getToDate()) > 0
@@ -75,7 +92,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
         }
     }
 
-    public Integer calculateLeaveDuration(String username, Integer month){
+    public Integer calculateLeaveDurationFormDb(String username, Integer month){
         Integer leaveDuration = leaveApplicationRepository.calculateLeaveDurationByUsername(username, month);
         if (leaveDuration == null){
             return 0;
@@ -90,6 +107,17 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
             return true;
         }
         return false;
+    }
+
+    public Long calculateLeaveDuration(Date fromDate, Date toDate){
+        long leaveDuration = DateDiff.getDateDiff(fromDate, toDate, TimeUnit.MINUTES);
+        if(fromDate.getDate() == toDate.getDate()){
+            if ((fromDate.getHours() == startWorkTime && toDate.getHours() <= stopMorningWorkTime) || (fromDate.getHours() == startAfternoonWorkTime && toDate.getHours() <= endWorkTime)){
+                return leaveDuration;
+            }
+            return leaveDuration - 60;
+        }
+        return leaveDuration - 60;
     }
     
     @Override
@@ -116,14 +144,17 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
             String employeeName = ExtractUserAuthentication.getCurrentUser().getUsername();
             Optional<LeavePolicy> leavePolicyDb = leavePolicyRepository.findById(leaveApplicationUpdateForm.getPolicyId());
             if (!leavePolicyDb.isPresent()) {
-                throw new DataNotFoundException(ExceptionConstants.LEAVE_TYPE_NAME_NOT_VALID);
+                throw new DataNotFoundException(ExceptionConstants.LEAVE_TYPE_NAME_INVALID);
             }
             Date dateModify = new Date();
             if ((leaveApplicationUpdateForm.getFromDate()).compareTo(leaveApplicationUpdateForm.getToDate()) > 0
                     || (leaveApplicationUpdateForm.getFromDate()).compareTo(dateModify) < 0){
                 throw new DataNotFoundException(ExceptionConstants.DATE_LEAVE_ILLEGAL);
             }
-            Integer leaveDuration = calculateLeaveDuration(employeeName, leaveApplicationUpdateForm.getFromDate().getMonth() + 1);
+            if((leaveApplicationUpdateForm.getFromDate().getHours() < startWorkTime || leaveApplicationUpdateForm.getFromDate().getHours() > endWorkTime) || (leaveApplicationUpdateForm.getToDate().getHours() < startWorkTime || leaveApplicationUpdateForm.getToDate().getHours() > endWorkTime)){
+                throw new DataNotFoundException(ExceptionConstants.NOT_WORKING_TIME);
+            }
+            Integer leaveDuration = calculateLeaveDurationFormDb(employeeName, leaveApplicationUpdateForm.getFromDate().getMonth() + 1);
             if(leaveDuration >= leavePolicyDb.get().getDuration() ){
                 throw new DataNotFoundException(ExceptionConstants.LEAVE_DURATION_TIME_OUT);
             }
@@ -146,5 +177,15 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
                 throw new DataNotFoundException(ExceptionConstants.ERRORS);
             }
         }
+    }
+
+    @Override
+    public Integer delete(LeaveApplication leaveApplication){
+        LeaveApplication leaveApplicationDb = getById(leaveApplication.getId());
+        if (leaveApplicationDb.getStatus().equals("OK")){
+            throw new DataNotFoundException(ExceptionConstants.EMPLOYEE_LEAVE_ACTION_ALREADY_TAKEN);
+        }
+        leaveApplicationRepository.delete(leaveApplicationDb);
+        return 0;
     }
 }

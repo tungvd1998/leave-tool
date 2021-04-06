@@ -4,8 +4,12 @@ import com.example.leave.api.forms.LeaveApplicationCreateForm;
 import com.example.leave.api.forms.LeaveApplicationUpdateForm;
 import com.example.leave.api.view.ResponseObject;
 import com.example.leave.models.LeaveApplication;
+import com.example.leave.models.LeavePolicy;
 import com.example.leave.services.LeaveApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,4 +37,8 @@ public class LeaveApplicationController {
         return new ResponseObject(listLeaveApplication);
     }
 
+    @PostMapping("/delete")
+    public ResponseEntity<?> delete(@RequestBody LeaveApplication leaveApplication){
+        return new ResponseEntity<Integer>(leaveApplicationService.delete(leaveApplication), HttpStatus.OK);
+    }
 }
