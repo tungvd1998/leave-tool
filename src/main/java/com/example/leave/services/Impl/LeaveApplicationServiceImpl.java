@@ -10,6 +10,7 @@ import com.example.leave.repositories.LeaveApplicationRepository;
 import com.example.leave.repositories.LeavePolicyRepository;
 import com.example.leave.repositories.UserRepository;
 import com.example.leave.services.LeaveApplicationService;
+import com.example.leave.services.MailService;
 import com.example.leave.utils.DateDiff;
 import com.example.leave.utils.ExceptionConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private MailService mailService;
+
     @Override
     @Transactional
     public LeaveApplication createLeaveApplication(LeaveApplicationCreateForm leaveApplicationCreateForm) {
@@ -54,6 +58,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
             leaveApplication.setReason(leaveApplicationCreateForm.getReason());
             leaveApplication.setCreated(new Date());
             leaveApplication.setLeavePolicy(leavePolicyDb.get());
+            mailService.sendEmail(user.getUsername(),leaveApplication);
             return leaveApplicationRepository.save(leaveApplication);
         }
     }
@@ -62,5 +67,9 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     public List<LeaveApplication> getLeaveApplicationHistory(){
         String employeeName = ExtractUserAuthentication.getCurrentUser().getUsername();
         return leaveApplicationRepository.getByUsername(employeeName);
+    }
+    @Override
+    public List<LeaveApplication> listAllLeaveApplication() {
+        return leaveApplicationRepository.findAll();
     }
 }

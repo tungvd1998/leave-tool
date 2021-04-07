@@ -7,8 +7,6 @@ import com.example.leave.models.User;
 import com.example.leave.services.AuthenticationService;
 import com.example.leave.services.Impl.UserServiceImpl;
 import com.example.leave.services.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +20,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/leave")
+@CrossOrigin(origins = "*")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -86,16 +84,21 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-//
-//    @PostMapping("/user/delete/{id}")
-//    public ResponseEntity<?> delete(@RequestBody User user, @PathVariable Integer id) {
-//        try {
-//            User existUser = userService.getByIdUser(id);
-//            userService.deleteUser(user);
-//            return new ResponseEntity<>(HttpStatus.OK);
-//        } catch (NoSuchElementException e) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
+    @RequestMapping(value = {"/user/getAll"}, method = RequestMethod.GET)
+    @PreAuthorize("@appAuthorizer.authorize(authentication, 'getAll', '/user/getAll')")
+    public List<User> list() {
+        return userService.listAllUser();
+    }
+
+    @PostMapping("/user/delete/{id}")
+    public ResponseEntity<?> delete(@RequestBody User user, @PathVariable Integer id) {
+        try {
+            User existUser = userService.getByIdUser(id);
+            userService.deleteUser(user);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 }

@@ -25,11 +25,23 @@ public class LeavePolicyController {
         return listPolicy;
     }
 
-//    @PostMapping("/create")
-//    @PreAuthorize("@appAuthorizer.authorize(authentication, 'CREATE', this)")
-//    public ResponseEntity<?> createPolicy(@RequestBody LeavePolicy leavePolicy) throws Exception {
-//        return new ResponseEntity<LeavePolicy>(leavePolicyService.create(leavePolicy), HttpStatus.OK);
-//    }
+    @RequestMapping(value = {"/create"}, method = RequestMethod.POST)
+    @PreAuthorize("@appAuthorizer.authorize(authentication, 'create', '/leavePolicy/create')")
+    public ResponseEntity<?> createPolicy(@RequestBody LeavePolicy leavePolicy) throws Exception {
+        return new ResponseEntity<LeavePolicy>(leavePolicyService.create(leavePolicy), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = {"/update"}, method = RequestMethod.POST)
+    @PreAuthorize("@appAuthorizer.authorize(authentication, 'update', '/leavePolicy/update')")
+    public ResponseEntity<?> updatePolicy(@RequestBody LeavePolicy leavePolicy) throws Exception {
+        return new ResponseEntity<LeavePolicy>(leavePolicyService.update(leavePolicy), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = {"/delete"}, method = RequestMethod.POST)
+    @PreAuthorize("@appAuthorizer.authorize(authentication, 'delete', '/leavePolicy/delete')")
+    public ResponseEntity<?> delete(@RequestBody LeavePolicy leavePolicy) {
+        return new ResponseEntity<Integer>(leavePolicyService.delete(leavePolicy), HttpStatus.OK);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<LeavePolicy> getPolicyById(@PathVariable Integer id) {
@@ -40,16 +52,4 @@ public class LeavePolicyController {
             return new ResponseEntity<LeavePolicy>(HttpStatus.NOT_FOUND);
         }
     }
-
-//    @PostMapping(value = "/update")
-//    @PreAuthorize("@appAuthorizer.authorize(authentication, 'UPDATE', this)")
-//    public ResponseEntity<?> updatePolicy(@RequestBody LeavePolicy leavePolicy) throws Exception {
-//        return new ResponseEntity<LeavePolicy>(leavePolicyService.update(leavePolicy), HttpStatus.OK);
-//    }
-//
-//    @PostMapping("/delete")
-//    @PreAuthorize("@appAuthorizer.authorize(authentication, 'DELETE', this)")
-//    public ResponseEntity<?> delete(@RequestBody LeavePolicy leavePolicy) {
-//        return new ResponseEntity<Integer>(leavePolicyService.delete(leavePolicy), HttpStatus.OK);
-//    }
 }
