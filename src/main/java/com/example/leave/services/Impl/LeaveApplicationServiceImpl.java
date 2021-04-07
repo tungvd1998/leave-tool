@@ -12,12 +12,14 @@ import com.example.leave.repositories.LeavePolicyRepository;
 import com.example.leave.repositories.UserRepository;
 import com.example.leave.services.LeaveApplicationService;
 import com.example.leave.utils.DateDiff;
+import com.example.leave.utils.DayOfWeek;
 import com.example.leave.utils.ExceptionConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -55,20 +57,23 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
             throw new DataNotFoundException(ExceptionConstants.LEAVE_TYPE_NAME_INVALID);
         }
         else {
-            System.out.println(leaveApplicationCreateForm.getFromDate().getDate());
             String employeeName = ExtractUserAuthentication.getCurrentUser().getUsername();
             User user = userRepository.findByUsername(employeeName);
             Integer leaveDuration = calculateLeaveDurationFormDb(employeeName, leaveApplicationCreateForm.getFromDate().getMonth() + 1);
+            Integer dayOfWeek = DayOfWeek.getDayNumberOld(leaveApplicationCreateForm.getFromDate());
+            System.out.println(dayOfWeek);
             if(leaveDuration >= leavePolicyDb.get().getDuration()){
                 throw new DataNotFoundException(ExceptionConstants.LEAVE_DURATION_TIME_OUT);
             }
-            long leaveTime = 0;
-            leaveTime += DateDiff.getDateDiff(leaveApplicationCreateForm.getFromDate(), leaveApplicationCreateForm.getToDate(), TimeUnit.MINUTES);
+            long leaveTime = calculateLeaveDuration(leaveApplicationCreateForm.getFromDate(), leaveApplicationCreateForm.getToDate());
             if(leaveTime > leavePolicyDb.get().getDuration() || (leaveTime + leaveDuration) > leavePolicyDb.get().getDuration()) {
                 throw new DataNotFoundException(ExceptionConstants.LEAVE_DURATION_INVALID);
             }
             if((leaveApplicationCreateForm.getFromDate().getHours() < startWorkTime || leaveApplicationCreateForm.getFromDate().getHours() > endWorkTime) || (leaveApplicationCreateForm.getToDate().getHours() < startWorkTime || leaveApplicationCreateForm.getToDate().getHours() > endWorkTime)){
                 throw new DataNotFoundException(ExceptionConstants.NOT_WORKING_TIME);
+            }
+            if (DayOfWeek.getDayNumberOld(leaveApplicationCreateForm.getFromDate()) == 7 || DayOfWeek.getDayNumberOld(leaveApplicationCreateForm.getToDate()) == 7){
+                throw new DataNotFoundException(ExceptionConstants.DATE_LEAVE_ILLEGAL);
             }
             Date dateCreate = new Date();
             if ((leaveApplicationCreateForm.getFromDate()).compareTo(leaveApplicationCreateForm.getToDate()) > 0
@@ -111,13 +116,26 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 
     public Long calculateLeaveDuration(Date fromDate, Date toDate){
         long leaveDuration = DateDiff.getDateDiff(fromDate, toDate, TimeUnit.MINUTES);
-        if(fromDate.getDate() == toDate.getDate()){
-            if ((fromDate.getHours() == startWorkTime && toDate.getHours() <= stopMorningWorkTime) || (fromDate.getHours() == startAfternoonWorkTime && toDate.getHours() <= endWorkTime)){
-                return leaveDuration;
+        if (fromDate.getDate() == toDate.getDate()){
+            if (fromDate.getHours() >= startWorkTime && toDate.getHours() >= startAfternoonWorkTime){
+                return leaveDuration - 60;
+            }else if (fromDate.getHours() >= startWorkTime && toDate.getHours() == stopMorningWorkTime){
+                return leaveDuration - toDate.getMinutes();
+            }else if (fromDate.getHours() == stopMorningWorkTime && toDate.getHours() <= endWorkTime){
+                return leaveDuration - fromDate.getMinutes();
+            }else if (fromDate.getHours() == stopMorningWorkTime && toDate.getHours() == stopMorningWorkTime){
+                return leaveDuration - (toDate.getMinutes() - toDate.getMinutes());
             }
-            return leaveDuration - 60;
+            return leaveDuration;
+        } else {
+            Integer day = toDate.getDate() - fromDate.getDate();
+            for (int value = 1; value <= day; value++){
+                if (value == day){
+                    leaveDuration = leaveDuration - (16 * 60 * value) - 60;
+                }
+            }
+            return leaveDuration;
         }
-        return leaveDuration - 60;
     }
     
     @Override
@@ -158,7 +176,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
             if(leaveDuration >= leavePolicyDb.get().getDuration() ){
                 throw new DataNotFoundException(ExceptionConstants.LEAVE_DURATION_TIME_OUT);
             }
-            Long leaveTime = DateDiff.getDateDiff(leaveApplicationUpdateForm.getFromDate(), leaveApplicationUpdateForm.getToDate(), TimeUnit.MINUTES);
+            Long leaveTime = calculateLeaveDuration(leaveApplicationUpdateForm.getFromDate(), leaveApplicationUpdateForm.getToDate());
             if(leaveTime > leavePolicyDb.get().getDuration() || (leaveTime + (leaveDuration - leaveApplication.getLeaveDuration()) > leavePolicyDb.get().getDuration())) {
                 throw new DataNotFoundException(ExceptionConstants.LEAVE_DURATION_INVALID);
             }
