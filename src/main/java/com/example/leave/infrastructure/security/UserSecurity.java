@@ -14,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -47,10 +48,12 @@ public class UserSecurity extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception{
-        httpSecurity.csrf().disable().authorizeRequests().antMatchers("/**").permitAll()
-        .anyRequest().authenticated()
-        .and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);;
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.csrf().disable().authorizeRequests().antMatchers("/*/*").permitAll()
+                .anyRequest().authenticated()
+                .and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).
+                and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
+
 }

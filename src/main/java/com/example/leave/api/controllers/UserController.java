@@ -85,10 +85,10 @@ public class UserController {
         }
     }
     @RequestMapping(value = {"/user/getAll"}, method = RequestMethod.GET)
-    @PreAuthorize("@appAuthorizer.authorize(authentication, 'getAll', '/user/getAll')")
     public List<User> list() {
         return userService.listAllUser();
     }
+
 
     @PostMapping("/user/delete/{id}")
     public ResponseEntity<?> delete(@RequestBody User user, @PathVariable Integer id) {

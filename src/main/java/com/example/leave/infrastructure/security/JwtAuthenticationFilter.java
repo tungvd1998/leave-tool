@@ -1,5 +1,6 @@
 package com.example.leave.infrastructure.security;
 
+import com.example.leave.repositories.AuthorizerRepository;
 import com.example.leave.services.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +18,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 
 @Slf4j
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private static final String jwtTokenCookieName = "JWT-TOKEN";
-    private static final String signingKey = "signingKey";
+
     @Autowired
     private JwtUtil jwtUtil;
 
@@ -32,6 +33,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AuthorizerRepository authorizerRepository;
+
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest,
                                     HttpServletResponse httpServletResponse, FilterChain filterChain)
@@ -40,6 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String username = null;
         String jwtToken = null;
+
         String urlPath = httpServletRequest.getRequestURI();
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
@@ -55,18 +60,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.warn("JWT Token does not begin with Bearer String");
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-            System.out.println("Giuaa                    check1111 " +username);
             UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
             if (jwtUtil.validateToken(jwtToken, userDetails)) {
-
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            }
-        }
+            }else {
                 filterChain.doFilter(httpServletRequest, httpServletResponse);
+            }
+            boolean isAllow = false;
+            try {
+                //Truy vấn vào CSDL theo username
+                ArrayList<String> apiPermissions = authorizerRepository.getApiByUsername(username);
+                //Nếu có quyền thì
+                isAllow = apiPermissions.contains(urlPath);
+            } catch (Exception e) {
+                log.error(e.toString(), e);
+                throw e;
+            }
+            if (isAllow == true){
+                filterChain.doFilter(httpServletRequest, httpServletResponse);
+            }
+            if(isAllow == false){
+                throw new ServletException("Error Authorizer Api");
+            }
+        }else{
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+        }
     }
 }
