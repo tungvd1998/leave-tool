@@ -20,6 +20,7 @@ public class LeavePolicyController {
     @Autowired
     private LeavePolicyService leavePolicyService;
 
+
     @GetMapping("/getAll")
     public List<LeavePolicy> getAllPolicy(){
         List<LeavePolicy> listPolicy = leavePolicyService.getListLeavePolicy();
@@ -32,11 +33,11 @@ public class LeavePolicyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LeavePolicy> getPolicyById(@PathVariable Integer id){
-        try{
+    public ResponseEntity<LeavePolicy> getPolicyById(@PathVariable Integer id) {
+        try {
             LeavePolicy leavePolicy = leavePolicyService.getLeavePolicyById(id);
             return new ResponseEntity<LeavePolicy>(leavePolicy, HttpStatus.OK);
-        } catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return new ResponseEntity<LeavePolicy>(HttpStatus.NOT_FOUND);
         }
     }
@@ -47,7 +48,7 @@ public class LeavePolicyController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> delete(@RequestBody LeavePolicy leavePolicy){
+    public ResponseEntity<?> delete(@RequestBody LeavePolicy leavePolicy) {
         return new ResponseEntity<Integer>(leavePolicyService.delete(leavePolicy), HttpStatus.OK);
     }
 }

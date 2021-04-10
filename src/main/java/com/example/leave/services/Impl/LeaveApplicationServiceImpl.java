@@ -94,7 +94,6 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
             leaveApplication.setReason(leaveApplicationCreateForm.getReason());
             leaveApplication.setCreated(dateCreate);
             leaveApplication.setLeavePolicy(leavePolicyDb.get());
-
             return leaveApplicationRepository.save(leaveApplication);
         }
     }

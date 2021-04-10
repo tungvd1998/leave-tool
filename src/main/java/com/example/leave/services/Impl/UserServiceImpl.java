@@ -1,5 +1,5 @@
 package com.example.leave.services.Impl;
-
+import com.example.leave.infrastructure.security.CookieUtil;
 import com.example.leave.infrastructure.security.JwtUtil;
 import com.example.leave.models.User;
 import com.example.leave.repositories.UserRepository;
@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +22,8 @@ import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
+    private static final String jwtTokenCookieName = "JWT-TOKEN";
+
     @Autowired
     private UserRepository userRepository;
 
@@ -27,7 +32,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private AuthenticationServiceImpl authenticationService;
-
+  
     @Override
     public User createUser(User user){
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
@@ -39,11 +44,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         User user = userRepository.findByUsername(username);
-//        User user = userRepository.findById();
         if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
-//        return JwtUserDetails.create(user);
         return new MyUserDetails(user);
     }
 
@@ -60,9 +63,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public String loginUser(UserDetails userDetails){
+    public String loginUser(UserDetails userDetails, HttpServletResponse httpServletResponse){
         final String token = jwtUtil.generateToken(userDetails);
+
+        CookieUtil.create(httpServletResponse, jwtTokenCookieName, token, false, -1, "localhost");
         return token;
+    }
+
+    @Override
+    public String logoutUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        JwtUtil.invalidateRelatedTokens(httpServletRequest);
+        CookieUtil.clear(httpServletResponse, jwtTokenCookieName);
+        return "logout....";
     }
 
     @Override

@@ -21,7 +21,8 @@ import java.io.IOException;
 @Slf4j
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
+    private static final String jwtTokenCookieName = "JWT-TOKEN";
+    private static final String signingKey = "signingKey";
     @Autowired
     private JwtUtil jwtUtil;
 
@@ -32,18 +33,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private UserService userService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest httpServletRequest,
+                                    HttpServletResponse httpServletResponse, FilterChain filterChain)
             throws ServletException, IOException {
-        final String requestTokenHeader = request.getHeader("Authorization");
+        final String requestTokenHeader = httpServletRequest.getHeader("Authorization");
 
         String username = null;
         String jwtToken = null;
-        String urlPath = request.getRequestURI();
+        String urlPath = httpServletRequest.getRequestURI();
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
+            System.out.println(jwtToken);
             try {
                 username = jwtUtil.getUsernameFromToken(jwtToken);
+                System.out.println("dataooooooo" + username);
             } catch (IllegalArgumentException e) {
                 System.out.println("Unable to get JWT Token");
             } catch (ExpiredJwtException e) {
@@ -54,16 +57,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
+            System.out.println("Giuaa                    check1111 " +username);
             UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
             if (jwtUtil.validateToken(jwtToken, userDetails)) {
 
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken
-                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
         }
-        filterChain.doFilter(request, response);
+                filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 }

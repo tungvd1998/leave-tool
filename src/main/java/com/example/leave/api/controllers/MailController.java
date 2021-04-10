@@ -16,7 +16,7 @@ public class MailController {
     public JavaMailSender emailSender;
 
     @ResponseBody
-    @GetMapping("/sendEmail")
+    @GetMapping("/email/send")
     public String sendSimpleEmail() {
 
         // Create a Simple MailMessage.
