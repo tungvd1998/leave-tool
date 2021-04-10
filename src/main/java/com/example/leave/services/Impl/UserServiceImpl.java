@@ -1,5 +1,4 @@
 package com.example.leave.services.Impl;
-
 import com.example.leave.infrastructure.security.CookieUtil;
 import com.example.leave.infrastructure.security.JwtUtil;
 import com.example.leave.models.User;
@@ -11,14 +10,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
