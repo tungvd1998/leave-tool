@@ -3,6 +3,7 @@ package com.example.leave.api.controllers;
 import com.example.leave.infrastructure.security.JwtUtil;
 import com.example.leave.models.JwtRequest;
 import com.example.leave.models.JwtResponse;
+import com.example.leave.models.LeavePolicy;
 import com.example.leave.models.User;
 import com.example.leave.services.AuthenticationService;
 import com.example.leave.services.Impl.UserServiceImpl;
@@ -21,7 +22,6 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/leave")
-@CrossOrigin(origins = "*")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -85,10 +85,9 @@ public class UserController {
         }
     }
     @RequestMapping(value = {"/user/getAll"}, method = RequestMethod.GET)
-    public List<User> list() {
-        return userService.listAllUser();
+    public ResponseEntity<?> listUser() throws Exception {
+        return new ResponseEntity<>(userService.listAllUser(), HttpStatus.OK);
     }
-
 
     @PostMapping("/user/delete/{id}")
     public ResponseEntity<?> delete(@RequestBody User user, @PathVariable Integer id) {
