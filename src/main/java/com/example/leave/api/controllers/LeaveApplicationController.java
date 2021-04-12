@@ -24,7 +24,7 @@ public class LeaveApplicationController {
         return new ResponseEntity<>(leaveApplicationService.createLeaveApplication(leaveApplicationCreateForm), HttpStatus.OK);
     }
 
-    @RequestMapping(value = {"/getHistory"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/history"}, method = RequestMethod.GET)
     public ResponseEntity<?> getApplicationHistory(){
         return new ResponseEntity<>(leaveApplicationService.getLeaveApplicationHistory(), HttpStatus.OK);
     }

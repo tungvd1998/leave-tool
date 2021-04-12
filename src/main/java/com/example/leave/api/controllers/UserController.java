@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/leave")
+@RequestMapping("sys/v1")
 public class UserController {
     @Autowired
     private UserService userService;

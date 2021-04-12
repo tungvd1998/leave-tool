@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/sys/v1/leavePolicy")
+@RequestMapping("sys/v1/leavePolicy")
 public class LeavePolicyController {
 
     @Autowired
