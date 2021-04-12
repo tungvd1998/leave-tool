@@ -1,13 +1,9 @@
 package com.example.leave.repositories;
 
-import com.example.leave.models.LeaveApplication;
 import com.example.leave.models.Permission;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public interface AuthorizerRepository extends JpaRepository<Permission, Integer> {
 

@@ -26,7 +26,7 @@ public class LeaveApplicationController {
 
     @RequestMapping(value = {"/getHistory"}, method = RequestMethod.GET)
     public ResponseEntity<?> getApplicationHistory(){
-        return new ResponseEntity<>(leaveApplicationService.listAllLeaveApplication(), HttpStatus.OK);
+        return new ResponseEntity<>(leaveApplicationService.getLeaveApplicationHistory(), HttpStatus.OK);
     }
 
 }

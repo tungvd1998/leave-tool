@@ -8,7 +8,6 @@ import java.util.Date;
 
 
 @RestController
-@CrossOrigin(origins = "*")
 public class MailController {
 
     @Autowired
