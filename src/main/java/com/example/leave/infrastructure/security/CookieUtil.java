@@ -15,7 +15,6 @@ public class CookieUtil {
         cookie.setDomain(domain);
         cookie.setPath("/");
         httpServletResponse.addCookie(cookie);
-        System.out.println("dmmmmmmmmmmmmmm");
     }
 
     public static void clear(HttpServletResponse httpServletResponse, String name) {
@@ -25,7 +24,6 @@ public class CookieUtil {
         cookie.setMaxAge(0);
         cookie.setDomain("localhost");
         httpServletResponse.addCookie(cookie);
-        System.out.println("dmmmmmmmmmmmmmm");
     }
 
     public static String getValue(HttpServletRequest httpServletRequest, String name) {

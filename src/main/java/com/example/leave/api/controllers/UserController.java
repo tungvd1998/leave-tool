@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -33,13 +32,12 @@ public class UserController {
     @Autowired
     private UserServiceImpl jwtUserDetailsService;
 
-    @PostMapping("/register")
+    @RequestMapping(value = {"/register"}, method = RequestMethod.POST)
     public User register(@RequestBody User user) {
         return userService.createUser(user);
     }
 
-
-    @PostMapping(value = "/login")
+    @RequestMapping(value = {"/login"}, method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest, HttpServletResponse httpServletResponse) throws Exception {
 
         authenticationService.authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
@@ -48,8 +46,7 @@ public class UserController {
         return ResponseEntity.ok(new JwtResponse(userService.loginUser(userDetails, httpServletResponse)));
     }
 
-
-    @PostMapping("/logout")
+    @RequestMapping(value = {"/logout"}, method = RequestMethod.POST)
     public ResponseEntity<?> deleteAuthenticationToken(@RequestBody JwtRequest authenticationRequest, HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest) throws Exception {
         authenticationService.authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
         String username = authenticationRequest.getUsername();
@@ -57,12 +54,7 @@ public class UserController {
         return ResponseEntity.ok(new JwtResponse(userService.logoutUser(httpServletRequest, httpServletResponse)));
     }
 
-    @GetMapping("/user")
-    public List<User> list() {
-        return userService.listAllUser();
-    }
-
-    @GetMapping("/user/{id}")
+    @RequestMapping(value = {"/user/get/{id}"}, method = RequestMethod.GET)
     public ResponseEntity<User> get(@PathVariable Integer id) {
         try {
             User user = userService.getByIdUser(id);
@@ -72,7 +64,8 @@ public class UserController {
         }
     }
 
-    @PostMapping("/user/update/{id}")
+
+    @RequestMapping(value = {"/user/update/{id}"}, method = RequestMethod.POST)
     public ResponseEntity<?> update(@RequestBody User user, @PathVariable Integer id){
         try {
             User existUser = userService.getByIdUser(id);
@@ -87,6 +80,10 @@ public class UserController {
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+    @RequestMapping(value = {"/user/getAll"}, method = RequestMethod.GET)
+    public ResponseEntity<?> listUser() throws Exception {
+        return new ResponseEntity<>(userService.listAllUser(), HttpStatus.OK);
     }
 
     @PostMapping("/user/delete/{id}")

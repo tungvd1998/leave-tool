@@ -7,14 +7,13 @@ import com.example.leave.services.LeavePolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("sys/v1/leavePolicies")
+@RequestMapping("sys/v1/leavePolicy")
 public class LeavePolicyController {
 
     @Autowired
@@ -51,4 +50,5 @@ public class LeavePolicyController {
     public ResponseEntity<?> delete(@RequestBody LeavePolicy leavePolicy) {
         return new ResponseEntity<Integer>(leavePolicyService.delete(leavePolicy), HttpStatus.OK);
     }
+
 }

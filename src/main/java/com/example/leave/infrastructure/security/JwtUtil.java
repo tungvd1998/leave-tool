@@ -52,7 +52,7 @@ public class JwtUtil {
         RedisUtil.INSTANCE.sadd(JWT_SECRET, subject);
         return token;
     }
-    public static String parseToken(HttpServletRequest httpServletRequest, String jwtTokenCookieName, String signingKey){
+    public String parseToken(HttpServletRequest httpServletRequest, String jwtTokenCookieName, String signingKey){
         String token = CookieUtil.getValue(httpServletRequest, jwtTokenCookieName);
         if(token == null) {
             return null;
@@ -70,7 +70,7 @@ public class JwtUtil {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-    public static void invalidateRelatedTokens(HttpServletRequest httpServletRequest) {
+    public void invalidateRelatedTokens(HttpServletRequest httpServletRequest) {
         System.out.println(httpServletRequest);
         RedisUtil.INSTANCE.srem(JWT_SECRET, (String) httpServletRequest.getAttribute("username"));
     }

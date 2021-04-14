@@ -1,6 +1,7 @@
 package com.example.leave.api.controllers;
 
 import com.example.leave.api.forms.LeaveApplicationCreateForm;
+
 import com.example.leave.api.forms.LeaveApplicationUpdateForm;
 import com.example.leave.api.view.ResponseObject;
 import com.example.leave.models.LeaveApplication;
@@ -11,12 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("sys/v1/leaveApplications")
+@RequestMapping("sys/v1/leaveApplication")
 public class LeaveApplicationController {
     @Autowired
     private LeaveApplicationService leaveApplicationService;

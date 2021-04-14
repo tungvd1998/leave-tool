@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public String logoutUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        JwtUtil.invalidateRelatedTokens(httpServletRequest);
+        jwtUtil.invalidateRelatedTokens(httpServletRequest);
         CookieUtil.clear(httpServletResponse, jwtTokenCookieName);
         return "logout....";
     }

@@ -3,6 +3,7 @@ package com.example.leave.services;
 import com.example.leave.api.forms.LeaveApplicationCreateForm;
 import com.example.leave.api.forms.LeaveApplicationUpdateForm;
 import com.example.leave.models.LeaveApplication;
+import com.example.leave.models.User;
 
 import java.util.List;
 
