@@ -19,6 +19,7 @@ public class LeavePolicy implements Serializable {
     private String content;
     private Date fromDate;
     private Date toDate;
+    private Date modified;
     private Integer creatorId;
 
 }
