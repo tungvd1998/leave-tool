@@ -12,6 +12,7 @@ import com.example.leave.repositories.LeavePolicyRepository;
 import com.example.leave.repositories.UserRepository;
 import com.example.leave.services.LeaveApplicationService;
 import com.example.leave.services.MailService;
+import com.example.leave.services.WorkTimeService;
 import com.example.leave.utils.DateDiff;
 import com.example.leave.utils.DayOfWeek;
 import com.example.leave.utils.ExceptionConstants;
@@ -20,7 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -41,17 +41,28 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     @Autowired
     private MailService mailService;
 
-    @Value("${startWorkTime}")
+    @Autowired
+    public WorkTimeService workTimeService;
+
     private Integer startWorkTime;
 
-    @Value("${stopMorningWorkTime}")
     private Integer stopMorningWorkTime;
 
-    @Value("${startAfternoonWorkTime}")
     private Integer startAfternoonWorkTime;
 
-    @Value("${endWorkTime}")
     private Integer endWorkTime;
+
+    @Value("${app.startWorkTime}")
+    private String startW;
+
+    @Value("${app.stopMorningWorkTime}")
+    private String stopMo;
+
+    @Value("${app.startAfternoonWorkTime}")
+    private String startAf;
+
+    @Value("${app.endWorkTime}")
+    private String endW;
 
     @Override
     @Transactional
@@ -103,7 +114,14 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
         }
     }
 
+
     public Integer calculateLeaveDurationFormDb(String username, Integer month){
+        if (workTimeService.existCacheRedis()) workTimeService.pushCacheRedis();
+        workTimeService.pushCacheRedis();
+        startWorkTime = workTimeService.pullCacheRediss(startW);
+        stopMorningWorkTime = workTimeService.pullCacheRediss(stopMo);
+        startAfternoonWorkTime = workTimeService.pullCacheRediss(startAf);
+        endWorkTime = workTimeService.pullCacheRediss(endW);
         Integer leaveDuration = leaveApplicationRepository.calculateLeaveDurationByUsername(username, month);
         if (leaveDuration == null){
             return 0;
@@ -145,7 +163,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
         long leaveDuration = DateDiff.getDateDiff(fromDate, toDate, TimeUnit.MINUTES);
         System.out.println(leaveDuration);
         if (DateDiff.getDate(fromDate) == DateDiff.getDate(toDate)){
-            if (DateDiff.getHour(fromDate) < startWorkTime && DateDiff.getHour(toDate) >= startAfternoonWorkTime) {
+            if (DateDiff.getHour(fromDate) < stopMorningWorkTime && DateDiff.getHour(toDate) >= startAfternoonWorkTime) {
                 return leaveDuration - 60;
             }
             return leaveDuration;

@@ -17,6 +17,9 @@ public class JwtUtil {
     @Value("${app.jwtSecret}")
     private String JWT_SECRET;
 
+    @Value("${app.jwtSecretCookie}")
+    private String jwtTokenCookieName;
+
     @Value("${app.jwtExpirationInMs}")
     private long JWT_EXPIRATION;
 
@@ -31,10 +34,12 @@ public class JwtUtil {
     }
 
     private Claims getAllClaimsFromToken(String token){
+
         return Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token).getBody();
     }
 
     private Boolean isTokenExpired(String token){
+
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
@@ -52,22 +57,19 @@ public class JwtUtil {
         RedisUtil.INSTANCE.sadd(JWT_SECRET, subject);
         return token;
     }
-    public String parseToken(HttpServletRequest httpServletRequest, String jwtTokenCookieName, String signingKey){
+    public String parseToken(HttpServletRequest httpServletRequest){
         String token = CookieUtil.getValue(httpServletRequest, jwtTokenCookieName);
         if(token == null) {
             return null;
         }
-
-        String subject = Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token).getBody().getSubject();
+        String subject = Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token).getBody().getSubject();
         if (!RedisUtil.INSTANCE.sismember(JWT_SECRET, subject)) {
             return null;
         }
-
         return subject;
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails){
-        final String username = getUsernameFromToken(token);
+    public Boolean validateToken(String token, UserDetails userDetails, String username){
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
     public void invalidateRelatedTokens(HttpServletRequest httpServletRequest) {

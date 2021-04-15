@@ -26,4 +26,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             " WHERE u.username = :username)", nativeQuery = true)
     User getUserLeader(@Param("username") String username);
 
+
 }

@@ -1,8 +1,11 @@
 package com.example.leave.infrastructure.security;
 
+import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+
+import java.util.Map;
 
 public enum RedisUtil {
     INSTANCE;
@@ -24,7 +27,6 @@ public enum RedisUtil {
                 jedis.close();
             }
         }
-        System.out.println("llllllllllllllllllllllllllllllllllllllllllll");
     }
 
     public void srem(String key, String value) {
@@ -50,4 +52,51 @@ public enum RedisUtil {
             }
         }
     }
+    public Long hset(String name, String key, String value){
+        Jedis jedis = null;
+        try{
+            jedis = pool.getResource();
+            return jedis.hset(name, key, value);
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+    public String hget(String name, String key){
+        Jedis jedis = null;
+        try{
+            jedis = pool.getResource();
+            return jedis.hget(name, key);
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+    public Long hdel(String name, String key){
+        Jedis jedis = null;
+        try{
+            jedis = pool.getResource();
+            return jedis.hdel(name, key);
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+    public Map<String,String> hgetAll(String key){
+    Jedis jedis = null;
+        try{
+        jedis = pool.getResource();
+        return jedis.hgetAll(key);
+    } finally {
+        if (jedis != null) {
+            jedis.close();
+        }
+    }
+
+
+    }
+
 }

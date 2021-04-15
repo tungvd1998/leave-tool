@@ -5,6 +5,7 @@ import com.example.leave.models.User;
 import com.example.leave.repositories.UserRepository;
 import com.example.leave.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,7 +23,8 @@ import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
-    private static final String jwtTokenCookieName = "JWT-TOKEN";
+    @Value("${app.jwtSecretCookie}")
+    private String jwtTokenCookieName;
 
     @Autowired
     private UserRepository userRepository;
@@ -65,7 +67,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public String loginUser(UserDetails userDetails, HttpServletResponse httpServletResponse){
         final String token = jwtUtil.generateToken(userDetails);
-
         CookieUtil.create(httpServletResponse, jwtTokenCookieName, token, false, -1, "localhost");
         return token;
     }

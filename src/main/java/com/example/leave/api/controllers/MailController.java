@@ -19,7 +19,6 @@ public class MailController {
         leaveApplication.setReason("Om");
         leaveApplication.setCreated(new Date());
         mailService.sendEmail("b",leaveApplication);
-
     }
 
 }
