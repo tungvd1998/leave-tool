@@ -23,15 +23,14 @@ public class DayOfWeek {
         int sundays = 0;
         int saturday = 0;
 
-        while (!c1.after(c2)) {
-            if (c1.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+        while (c2.after(c1)) {
+            if (c2.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ){
+                sundays++;
+            }else if (c2.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY){
                 saturday++;
             }
-            if (c1.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-                sundays++;
-            }
 
-            c1.add(Calendar.DATE, 1);
+            c2.add(Calendar.DATE, -1);
         }
 
         System.out.println("Saturday Count = " + saturday);
