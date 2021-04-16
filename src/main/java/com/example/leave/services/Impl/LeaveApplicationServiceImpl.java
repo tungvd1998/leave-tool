@@ -171,34 +171,34 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     }
 
     public Long calculateExtraTimeTheLastDayInMonth(Date fromDate, Date theLastDateOfMonth) {
-        Long durationInLeaveApplicationWithDifferentMonthDb2 = DateDiff.getDateDiff(fromDate, theLastDateOfMonth, TimeUnit.MINUTES);
+        Long durationInLeaveApplicationWithDifferentMonthDb = DateDiff.getDateDiff(fromDate, theLastDateOfMonth, TimeUnit.MINUTES);
         Integer daysToTheLastDateInMonth = (DateDiff.getDate(theLastDateOfMonth) - DateDiff.getDate(fromDate));
         if (DateDiff.getHour(fromDate) <= stopMorningWorkTime) {
-            return (durationInLeaveApplicationWithDifferentMonthDb2 - ((16 * (daysToTheLastDateInMonth)) + 420));
+            return (durationInLeaveApplicationWithDifferentMonthDb - ((16 * (daysToTheLastDateInMonth)) + 420));
         }
-        return (durationInLeaveApplicationWithDifferentMonthDb2 - ((16 * (daysToTheLastDateInMonth)) + 360));
+        return (durationInLeaveApplicationWithDifferentMonthDb - ((16 * (daysToTheLastDateInMonth)) + 360));
     }
 
 
     public Long calculateDurationInMonth(String username, Date date) {
-        LeaveApplication leaveApplicationWithDifferentMonthDb = leaveApplicationRepository.getLeaveApplicationWithDifferentMonth(username, DateDiff.getMonth(date) + 1);
-        LeaveApplication leaveApplicationWithDifferentMonthDb2 = leaveApplicationRepository.getLeaveApplicationWithDifferentMonth2(username, DateDiff.getMonth(date) + 1);
+        LeaveApplication leaveApplicationWithDifferentMonthBeginDb = leaveApplicationRepository.getLeaveApplicationWithDifferentMonthToDate(username, DateDiff.getMonth(date) + 1);
+        LeaveApplication leaveApplicationWithDifferentMonthEndDb = leaveApplicationRepository.getLeaveApplicationWithDifferentMonthFromDate(username, DateDiff.getMonth(date) + 1);
         Long leaveDurationWithTheSameMonth = calculateLeaveDurationFormDb(username, DateDiff.getMonth(date) + 1);
-        if (leaveApplicationWithDifferentMonthDb == null && leaveApplicationWithDifferentMonthDb2 == null) {
+        if (leaveApplicationWithDifferentMonthBeginDb == null && leaveApplicationWithDifferentMonthEndDb == null) {
             return leaveDurationWithTheSameMonth;
-        } else if (leaveApplicationWithDifferentMonthDb != null && leaveApplicationWithDifferentMonthDb2 == null) {
+        } else if (leaveApplicationWithDifferentMonthBeginDb != null && leaveApplicationWithDifferentMonthEndDb == null) {
             Date theFirstDateOfMonth = DateDiff.getFirstDateOfMonth(date);
-            Long extraTime = calculateExtraTimeTheFirstDayInMonth(leaveApplicationWithDifferentMonthDb.getToDate(), theFirstDateOfMonth);
+            Long extraTime = calculateExtraTimeTheFirstDayInMonth(leaveApplicationWithDifferentMonthBeginDb.getToDate(), theFirstDateOfMonth);
             return leaveDurationWithTheSameMonth + extraTime;
-        } else if (leaveApplicationWithDifferentMonthDb == null && leaveApplicationWithDifferentMonthDb2 != null) {
+        } else if (leaveApplicationWithDifferentMonthBeginDb == null && leaveApplicationWithDifferentMonthEndDb != null) {
             Date theLastDateOfMonth = DateDiff.getLastDateOfMonth(date);
-            Long extraTime = calculateExtraTimeTheLastDayInMonth(leaveApplicationWithDifferentMonthDb2.getFromDate(), theLastDateOfMonth);
+            Long extraTime = calculateExtraTimeTheLastDayInMonth(leaveApplicationWithDifferentMonthEndDb.getFromDate(), theLastDateOfMonth);
             return leaveDurationWithTheSameMonth + extraTime;
         } else {
             Date theFirstDateOfMonth = DateDiff.getFirstDateOfMonth(date);
-            Long extraTimeTheFirstDayInMonth = calculateExtraTimeTheFirstDayInMonth(leaveApplicationWithDifferentMonthDb.getToDate(), theFirstDateOfMonth);
+            Long extraTimeTheFirstDayInMonth = calculateExtraTimeTheFirstDayInMonth(leaveApplicationWithDifferentMonthBeginDb.getToDate(), theFirstDateOfMonth);
             Date theLastDateOfMonth = DateDiff.getLastDateOfMonth(date);
-            Long extraTimeTheLastDayInMonth = calculateExtraTimeTheLastDayInMonth(leaveApplicationWithDifferentMonthDb2.getFromDate(), theLastDateOfMonth);
+            Long extraTimeTheLastDayInMonth = calculateExtraTimeTheLastDayInMonth(leaveApplicationWithDifferentMonthEndDb.getFromDate(), theLastDateOfMonth);
             return leaveDurationWithTheSameMonth + extraTimeTheFirstDayInMonth + extraTimeTheLastDayInMonth;
         }
     }

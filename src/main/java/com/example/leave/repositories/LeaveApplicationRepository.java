@@ -36,14 +36,14 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
             "INNER JOIN users u ON la.user_id = u.id " +
             "WHERE u.username = :username AND MONTH (from_date) != MONTH (to_date) " +
             "AND MONTH (to_date) = :month ", nativeQuery = true)
-    LeaveApplication getLeaveApplicationWithDifferentMonth(@Param("username") String username, @Param("month") Integer month);
+    LeaveApplication getLeaveApplicationWithDifferentMonthToDate(@Param("username") String username, @Param("month") Integer month);
 
     @Query(value = "SELECT la.* " +
             "FROM leave_applications la " +
             "INNER JOIN users u ON la.user_id = u.id " +
             "WHERE u.username = :username AND MONTH (from_date) != MONTH (to_date) " +
             "AND MONTH (from_date) = :month ", nativeQuery = true)
-    LeaveApplication getLeaveApplicationWithDifferentMonth2(@Param("username") String username, @Param("month") Integer month);
+    LeaveApplication getLeaveApplicationWithDifferentMonthFromDate(@Param("username") String username, @Param("month") Integer month);
 
 
 }
