@@ -1,11 +1,11 @@
 package com.example.leave.services.Impl;
 
-import com.example.leave.infrastructure.security.RedisUtil;
 import com.example.leave.models.WorkTime;
 import com.example.leave.repositories.WorkTimeRepository;
 import com.example.leave.services.WorkTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -14,6 +14,9 @@ import java.util.Map;
 public class WorkTimeServiceImpl implements WorkTimeService {
     @Autowired
     private WorkTimeRepository workTimeRepository;
+
+    @Autowired
+    private RedisTemplate template;
 
     @Value("${app.workTime}")
     private String workTimee;
@@ -31,28 +34,29 @@ public class WorkTimeServiceImpl implements WorkTimeService {
     private String endWorkTime;
 
     @Override
-    public  boolean existCacheRedis(){
-        Map<String, String> workTimes =  RedisUtil.INSTANCE.hgetAll(workTimee);
-        if(workTimes != null){
-            return  false;}
-        else return true;
+    public boolean existCacheRedis() {
+        Map<String, String> workTimes = template.opsForHash().entries(workTimee);
+        if (workTimes != null) {
+            return false;
+        } else return true;
     }
 
     @Override
-    public void pushCacheRedis(){
+    public void pushCacheRedis() {
         WorkTime workTime = workTimeRepository.getWorkTime();
         String valueStartWorkTime = String.valueOf(workTime.getStartWorkTime());
         String valueStopMorningWorkTime = String.valueOf(workTime.getStopMorningWorkTime());
         String valueStartAfternoonWorkTime = String.valueOf(workTime.getStartAfternoonWorkTime());
         String valueEndWorkTime = String.valueOf(workTime.getEndWorkTime());
-        RedisUtil.INSTANCE.hset(workTimee, startWorkTime, valueStartWorkTime);
-        RedisUtil.INSTANCE.hset(workTimee, stopMorningWorkTime, valueStopMorningWorkTime);
-        RedisUtil.INSTANCE.hset(workTimee, startAfternoonWorkTime, valueStartAfternoonWorkTime);
-        RedisUtil.INSTANCE.hset(workTimee, endWorkTime, valueEndWorkTime);
+        template.opsForHash().put(workTimee, startWorkTime, valueStartWorkTime);
+        template.opsForHash().put(workTimee, stopMorningWorkTime, valueStopMorningWorkTime);
+        template.opsForHash().put(workTimee, startAfternoonWorkTime, valueStartAfternoonWorkTime);
+        template.opsForHash().put(workTimee, endWorkTime, valueEndWorkTime);
     }
 
     @Override
-    public Integer pullCacheRediss(String time) {
-        return Integer.parseInt(RedisUtil.INSTANCE.hget(workTimee, time));
+    public Integer pullCacheRedis(String time) {
+        String number = (String) template.opsForHash().get(workTimee, time);
+        return Integer.parseInt(number);
     }
 }

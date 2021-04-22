@@ -75,15 +75,10 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
             String employeeName = ExtractUserAuthentication.getCurrentUser().getUsername();
             User user = userRepository.findByUsername(employeeName);
             Integer leaveDuration = calculateLeaveDurationFormDb(employeeName, DateDiff.getMonth(leaveApplicationCreateForm.getFromDate()) + 1);
-            System.out.println(DateDiff.getHour(leaveApplicationCreateForm.getFromDate()));
-            System.out.println(DateDiff.getMinutes(leaveApplicationCreateForm.getFromDate()));
-            System.out.println(DateDiff.getDate(leaveApplicationCreateForm.getFromDate()));
-            System.out.println(DateDiff.getMonth(leaveApplicationCreateForm.getFromDate()));
             if(leaveDuration >= leavePolicyDb.get().getDuration()){
                 throw new DataNotFoundException(ExceptionConstants.LEAVE_DURATION_TIME_OUT);
             }
             long leaveTime = calculateLeaveDuration(leaveApplicationCreateForm.getFromDate(), leaveApplicationCreateForm.getToDate());
-            System.out.println(leaveTime);
             if(leaveTime > leavePolicyDb.get().getDuration() || (leaveTime + leaveDuration) > leavePolicyDb.get().getDuration()) {
                 throw new DataNotFoundException(ExceptionConstants.LEAVE_DURATION_INVALID);
             }
@@ -118,10 +113,10 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     public Integer calculateLeaveDurationFormDb(String username, Integer month){
         if (workTimeService.existCacheRedis()) workTimeService.pushCacheRedis();
         workTimeService.pushCacheRedis();
-        startWorkTime = workTimeService.pullCacheRediss(startW);
-        stopMorningWorkTime = workTimeService.pullCacheRediss(stopMo);
-        startAfternoonWorkTime = workTimeService.pullCacheRediss(startAf);
-        endWorkTime = workTimeService.pullCacheRediss(endW);
+        startWorkTime = workTimeService.pullCacheRedis(startW);
+        stopMorningWorkTime = workTimeService.pullCacheRedis(stopMo);
+        startAfternoonWorkTime = workTimeService.pullCacheRedis(startAf);
+        endWorkTime = workTimeService.pullCacheRedis(endW);
         Integer leaveDuration = leaveApplicationRepository.calculateLeaveDurationByUsername(username, month);
         if (leaveDuration == null){
             return 0;
@@ -161,7 +156,6 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 
     public Long calculateLeaveDuration(Date fromDate, Date toDate){
         long leaveDuration = DateDiff.getDateDiff(fromDate, toDate, TimeUnit.MINUTES);
-        System.out.println(leaveDuration);
         if (DateDiff.getDate(fromDate) == DateDiff.getDate(toDate)){
             if (DateDiff.getHour(fromDate) < stopMorningWorkTime && DateDiff.getHour(toDate) >= startAfternoonWorkTime) {
                 return leaveDuration - 60;

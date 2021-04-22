@@ -23,28 +23,28 @@ public class JwtUtil {
     @Value("${app.jwtExpirationInMs}")
     private long JWT_EXPIRATION;
 
-    public String getUsernameFromToken(String token){
+    public String getUsernameFromToken(String token) {
         final Claims claims = getAllClaimsFromToken(token);
         return claims.getSubject();
     }
 
-    public Date getExpirationDateFromToken(String token){
+    public Date getExpirationDateFromToken(String token) {
         final Claims claims = getAllClaimsFromToken(token);
         return claims.getExpiration();
     }
 
-    private Claims getAllClaimsFromToken(String token){
+    private Claims getAllClaimsFromToken(String token) {
 
         return Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token).getBody();
     }
 
-    private Boolean isTokenExpired(String token){
+    private Boolean isTokenExpired(String token) {
 
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return doGenerateToken(claims, userDetails.getUsername());
     }
@@ -54,26 +54,28 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION * 1000))
                 .signWith(SignatureAlgorithm.HS512, JWT_SECRET);
         String token = builder.compact();
-        RedisUtil.INSTANCE.sadd(JWT_SECRET, subject);
+        RedisUtil.INSTANCE.sAdd(JWT_SECRET, subject);
         return token;
     }
-    public String parseToken(HttpServletRequest httpServletRequest){
+
+    public String parseToken(HttpServletRequest httpServletRequest) {
         String token = CookieUtil.getValue(httpServletRequest, jwtTokenCookieName);
-        if(token == null) {
+        if (token == null) {
             return null;
         }
         String subject = Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token).getBody().getSubject();
-        if (!RedisUtil.INSTANCE.sismember(JWT_SECRET, subject)) {
+        if (!RedisUtil.INSTANCE.sisMember(JWT_SECRET, subject)) {
             return null;
         }
         return subject;
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails, String username){
+    public Boolean validateToken(String token, UserDetails userDetails, String username) {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
+
     public void invalidateRelatedTokens(HttpServletRequest httpServletRequest) {
         System.out.println(httpServletRequest);
-        RedisUtil.INSTANCE.srem(JWT_SECRET, (String) httpServletRequest.getAttribute("username"));
+        RedisUtil.INSTANCE.sRem(JWT_SECRET, (String) httpServletRequest.getAttribute("username"));
     }
 }
