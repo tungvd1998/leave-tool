@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class DateDiff {
     public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
-        long diffInMillies = date2.getTime() - date1.getTime();
-        return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+        long diffInMillieS = date2.getTime() - date1.getTime();
+        return timeUnit.convert(diffInMillieS,TimeUnit.MILLISECONDS);
     }
 
     public static long getDaysDiff(Date date1, Date date2){

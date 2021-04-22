@@ -32,9 +32,6 @@ public class DayOfWeek {
 
             c2.add(Calendar.DATE, -1);
         }
-
-        System.out.println("Saturday Count = " + saturday);
-        System.out.println("Sunday Count = " + sundays);
         return saturday + sundays;
     }
 
@@ -54,7 +51,6 @@ public class DayOfWeek {
             c1.add(Calendar.DATE, 1);
         }
 
-        System.out.println("WorkingDays Count = " + workingDays);
         return workingDays;
     }
 }
