@@ -13,21 +13,19 @@ public enum RedisUtil {
         pool = new JedisPool(new JedisPoolConfig(), "localhost");
     }
 
-    public void sadd(String key, String value) {
+    public void sAdd(String key, String value) {
         Jedis jedis = null;
         try{
             jedis = pool.getResource();
             jedis.sadd(key, value);
-            System.out.println(key +"====="+value );
         } finally {
             if (jedis != null) {
                 jedis.close();
             }
         }
-        System.out.println("llllllllllllllllllllllllllllllllllllllllllll");
     }
 
-    public void srem(String key, String value) {
+    public void sRem(String key, String value) {
         Jedis jedis = null;
         try{
             jedis = pool.getResource();
@@ -39,7 +37,7 @@ public enum RedisUtil {
         }
     }
 
-    public boolean sismember(String key, String value) {
+    public boolean sisMember(String key, String value) {
         Jedis jedis = null;
         try{
             jedis = pool.getResource();

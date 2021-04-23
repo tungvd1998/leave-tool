@@ -3,10 +3,13 @@ package com.example.leave.services.Impl;
 import com.example.leave.models.LeaveApplication;
 import com.example.leave.models.LeavePolicy;
 import com.example.leave.models.User;
+import com.example.leave.models.WorkTime;
 import com.example.leave.repositories.LeaveApplicationRepository;
 import com.example.leave.repositories.LeavePolicyRepository;
 import com.example.leave.repositories.UserRepository;
+import com.example.leave.repositories.WorkTimeRepository;
 import com.example.leave.services.MailService;
+import com.example.leave.services.WorkTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -25,8 +28,10 @@ public class MailServiceImpl implements MailService {
     private LeavePolicyRepository leavePolicyRepository;
 
     @Autowired
-    public JavaMailSender emailSender;
+    private WorkTimeRepository workTimeRepository;
 
+    @Autowired
+    public JavaMailSender emailSender;
     @Override
     public String sendEmail(String username, LeaveApplication leaveApp) {
         User userLeader = userRepository.getUserLeader(username);

@@ -7,11 +7,13 @@ import com.example.leave.infrastructure.security.ExtractUserAuthentication;
 import com.example.leave.models.LeaveApplication;
 import com.example.leave.models.LeavePolicy;
 import com.example.leave.models.User;
+import com.example.leave.models.WorkTime;
 import com.example.leave.repositories.LeaveApplicationRepository;
 import com.example.leave.repositories.LeavePolicyRepository;
 import com.example.leave.repositories.UserRepository;
 import com.example.leave.services.LeaveApplicationService;
 import com.example.leave.services.MailService;
+import com.example.leave.services.WorkTimeService;
 import com.example.leave.utils.DateDiff;
 import com.example.leave.utils.DayOfWeek;
 import com.example.leave.utils.ExceptionConstants;
@@ -40,17 +42,21 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     @Autowired
     private MailService mailService;
 
-    @Value("${startWorkTime}")
+    @Autowired
+    public WorkTimeService workTimeService;
+
+    private WorkTime workTime;
+
     private Integer startWorkTime;
 
-    @Value("${stopMorningWorkTime}")
     private Integer stopMorningWorkTime;
 
-    @Value("${startAfternoonWorkTime}")
     private Integer startAfternoonWorkTime;
 
-    @Value("${endWorkTime}")
     private Integer endWorkTime;
+
+    @Value("${app.id}")
+    private String id;
 
     @Override
     @Transactional
@@ -90,15 +96,23 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
             leaveApplication.setReason(leaveApplicationCreateForm.getReason());
             leaveApplication.setCreated(dateCreate);
             leaveApplication.setLeavePolicy(leavePolicyDb.get());
-            mailService.sendEmail(user.getUsername(),leaveApplication);
+//            mailService.sendEmail(user.getUsername(),leaveApplication);
             return leaveApplicationRepository.save(leaveApplication);
         }
     }
 
     public Long getLeaveDurationWithSameMonthFormDb(String username, Integer month) {
+        if (workTimeService.existCacheRedis()) workTimeService.pushCacheRedis();
+        workTimeService.pushCacheRedis();
+        workTime = workTimeService.pullCacheRedis(id);
+        startWorkTime = workTime.getStartWorkTime();
+        stopMorningWorkTime = workTime.getStopMorningWorkTime();
+        startAfternoonWorkTime = workTime.getStartAfternoonWorkTime();
+        endWorkTime = workTime.getEndWorkTime();
         Long leaveDuration = leaveApplicationRepository.calculateLeaveDurationByUsername(username, month);
         if (leaveDuration == null) {
             return Long.valueOf(0);
+
         }
         return leaveDuration;
     }
