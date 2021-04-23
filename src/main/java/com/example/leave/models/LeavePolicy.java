@@ -15,6 +15,7 @@ public class LeavePolicy implements Serializable {
     private Integer id;
     private String name;
     private Integer duration;
+    private Long maxDurationInMonth;
     private Date created;
     private String content;
     private Date fromDate;
