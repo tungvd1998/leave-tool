@@ -5,6 +5,7 @@ import com.example.leave.repositories.WorkTimeRepository;
 import com.example.leave.services.WorkTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,30 +13,25 @@ import java.util.Map;
 
 @Service
 public class WorkTimeServiceImpl implements WorkTimeService {
+
     @Autowired
     private WorkTimeRepository workTimeRepository;
 
-    @Autowired
-    private RedisTemplate template;
+    private RedisTemplate<String, WorkTime> redisTemplate;
+
+    private HashOperations hashOperations;
 
     @Value("${app.workTime}")
     private String workTimee;
 
-    @Value("${app.startWorkTime}")
-    private String startWorkTime;
-
-    @Value("${app.stopMorningWorkTime}")
-    private String stopMorningWorkTime;
-
-    @Value("${app.startAfternoonWorkTime}")
-    private String startAfternoonWorkTime;
-
-    @Value("${app.endWorkTime}")
-    private String endWorkTime;
+    public WorkTimeServiceImpl(RedisTemplate<String, WorkTime> redisTemplates) {
+        this.redisTemplate = redisTemplates;
+        hashOperations = redisTemplate.opsForHash();
+    }
 
     @Override
     public boolean existCacheRedis() {
-        Map<String, String> workTimes = template.opsForHash().entries(workTimee);
+        Map<String, WorkTime> workTimes = hashOperations.entries(workTimee);
         if (workTimes != null) {
             return false;
         } else return true;
@@ -44,19 +40,12 @@ public class WorkTimeServiceImpl implements WorkTimeService {
     @Override
     public void pushCacheRedis() {
         WorkTime workTime = workTimeRepository.getWorkTime();
-        String valueStartWorkTime = String.valueOf(workTime.getStartWorkTime());
-        String valueStopMorningWorkTime = String.valueOf(workTime.getStopMorningWorkTime());
-        String valueStartAfternoonWorkTime = String.valueOf(workTime.getStartAfternoonWorkTime());
-        String valueEndWorkTime = String.valueOf(workTime.getEndWorkTime());
-        template.opsForHash().put(workTimee, startWorkTime, valueStartWorkTime);
-        template.opsForHash().put(workTimee, stopMorningWorkTime, valueStopMorningWorkTime);
-        template.opsForHash().put(workTimee, startAfternoonWorkTime, valueStartAfternoonWorkTime);
-        template.opsForHash().put(workTimee, endWorkTime, valueEndWorkTime);
+        String id = String.valueOf(workTime.getId());
+        hashOperations.put(workTimee, id, workTime);
     }
 
     @Override
-    public Integer pullCacheRedis(String time) {
-        String number = (String) template.opsForHash().get(workTimee, time);
-        return Integer.parseInt(number);
+    public WorkTime pullCacheRedis(String id) {
+        return (WorkTime) hashOperations.get(workTimee, id);
     }
 }

@@ -1,7 +1,9 @@
 package com.example.leave.services;
 
+import com.example.leave.models.WorkTime;
+
 public interface WorkTimeService {
     void pushCacheRedis();
-    Integer pullCacheRedis(String time);
+    WorkTime pullCacheRedis(String time);
     boolean existCacheRedis();
 }

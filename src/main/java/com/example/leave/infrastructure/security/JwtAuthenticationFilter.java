@@ -74,7 +74,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 //Truy vấn vào CSDL theo username
                 String apiPermissions = authorizerRepository.getApiByUsername(username, urlPath);
-                System.out.println(username + " " + urlPath + " " + apiPermissions);
                 //Nếu có quyền thì
                 if(apiPermissions != null)isAllow = true;
             } catch (Exception e) {
