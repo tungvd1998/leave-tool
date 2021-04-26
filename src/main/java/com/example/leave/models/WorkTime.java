@@ -13,9 +13,9 @@ public class WorkTime implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer startWorkTime;
-    private Integer stopMorningWorkTime;
-    private Integer startAfternoonWorkTime;
-    private Integer endWorkTime;
+    private Integer begin;
+    private Integer lunchBreak;
+    private Integer backToWork;
+    private Integer end;
 
 }

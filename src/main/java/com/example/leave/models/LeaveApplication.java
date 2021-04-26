@@ -17,7 +17,7 @@ public class LeaveApplication implements Serializable {
     private Date toDate;
     private String reason;
     private Date created;
-    private String status;
+    private Integer status;
     private Date modified;
     private Long leaveDuration;
 

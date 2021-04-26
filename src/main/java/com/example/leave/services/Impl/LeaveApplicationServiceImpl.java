@@ -47,13 +47,13 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 
     private WorkTime workTime;
 
-    private Integer startWorkTime;
+    private Integer begin;
 
-    private Integer stopMorningWorkTime;
+    private Integer lunchBreak;
 
-    private Integer startAfternoonWorkTime;
+    private Integer backToWork;
 
-    private Integer endWorkTime;
+    private Integer end;
 
     @Value("${app.id}")
     private String id;
@@ -89,7 +89,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
             }
             LeaveApplication leaveApplication = new LeaveApplication();
             leaveApplication.setUser(user);
-            leaveApplication.setStatus(leaveApplicationCreateForm.getStatus());
+            leaveApplication.setStatus(0);
             leaveApplication.setLeaveDuration(leaveTime);
             leaveApplication.setFromDate(leaveApplicationCreateForm.getFromDate());
             leaveApplication.setToDate(leaveApplicationCreateForm.getToDate());
@@ -102,13 +102,6 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     }
 
     public Long getLeaveDurationWithSameMonthFormDb(String username, Integer month) {
-        if (workTimeService.existCacheRedis()) workTimeService.pushCacheRedis();
-        workTimeService.pushCacheRedis();
-        workTime = workTimeService.pullCacheRedis(id);
-        startWorkTime = workTime.getStartWorkTime();
-        stopMorningWorkTime = workTime.getStopMorningWorkTime();
-        startAfternoonWorkTime = workTime.getStartAfternoonWorkTime();
-        endWorkTime = workTime.getEndWorkTime();
         Long leaveDuration = leaveApplicationRepository.calculateLeaveDurationByUsername(username, month);
         if (leaveDuration == null) {
             return Long.valueOf(0);
@@ -126,8 +119,8 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     }
 
     public Boolean isNotWorkingTime(Date fromDate, Date toDate) {
-        if (DateDiff.getHour(fromDate) < startWorkTime || DateDiff.getHour(fromDate) >= endWorkTime || DateDiff.getHour(fromDate) == stopMorningWorkTime
-                || DateDiff.getHour(toDate) < startWorkTime || DateDiff.getHour(toDate) > endWorkTime || (DateDiff.getHour(toDate) == stopMorningWorkTime && DateDiff.getMinutes(toDate) > 0)) {
+        if (DateDiff.getHour(fromDate) < begin || DateDiff.getHour(fromDate) >= end || DateDiff.getHour(fromDate) == lunchBreak
+                || DateDiff.getHour(toDate) < begin || DateDiff.getHour(toDate) > end || (DateDiff.getHour(toDate) == lunchBreak && DateDiff.getMinutes(toDate) > 0)) {
             return true;
         }
         return false;
@@ -147,9 +140,16 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     }
 
     public Long leaveDuration(Date fromDate, Date toDate) {
+        if (workTimeService.existCacheRedis()) workTimeService.pushCacheRedis();
+        workTimeService.pushCacheRedis();
+        workTime = workTimeService.pullCacheRedis(id);
+        begin = workTime.getBegin();
+        lunchBreak = workTime.getLunchBreak();
+        backToWork = workTime.getBackToWork();
+        end = workTime.getEnd();
         long leaveDuration = DateDiff.getDateDiff(fromDate, toDate, TimeUnit.MINUTES);
         if (DateDiff.getDate(fromDate) == DateDiff.getDate(toDate)) {
-            if (DateDiff.getHour(fromDate) <= stopMorningWorkTime && DateDiff.getHour(toDate) >= startAfternoonWorkTime) {
+            if (DateDiff.getHour(fromDate) <= lunchBreak && DateDiff.getHour(toDate) >= backToWork) {
                 return leaveDuration - 60;
             }
             return leaveDuration;
@@ -165,15 +165,15 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
                 }
                 return leaveDuration;
             } else if (saturdaySundayCount == 1) {
-                if (DateDiff.getHour(fromDate) < stopMorningWorkTime) {
+                if (DateDiff.getHour(fromDate) < lunchBreak) {
                     return leaveDuration - (60 * 16 * (workingDays));
                 }
                 return leaveDuration - (60 * 15 * (workingDays));
             } else {
-                if (DateDiff.getHour(fromDate) < stopMorningWorkTime && DateDiff.getHour(toDate) <= stopMorningWorkTime
-                        || DateDiff.getHour(fromDate) >= startAfternoonWorkTime && DateDiff.getHour(toDate) >= startAfternoonWorkTime) {
+                if (DateDiff.getHour(fromDate) < lunchBreak && DateDiff.getHour(toDate) <= lunchBreak
+                        || DateDiff.getHour(fromDate) >= backToWork && DateDiff.getHour(toDate) >= backToWork) {
                     return leaveDuration - ((((20 * (saturdaySundayCount / 2)) + (24 * (saturdaySundayCount / 2))) * 60) + ((saturdaySundayCount / 2) * 30) + (60 * 16 * (workingDays - 1)));
-                } else if (DateDiff.getHour(fromDate) >= startAfternoonWorkTime && DateDiff.getHour(toDate) <= stopMorningWorkTime) {
+                } else if (DateDiff.getHour(fromDate) >= backToWork && DateDiff.getHour(toDate) <= lunchBreak) {
                     return leaveDuration - ((((20 * (saturdaySundayCount / 2)) + (24 * (saturdaySundayCount / 2))) * 60) + ((saturdaySundayCount / 2) * 30) + (60 * 16 * (workingDays)));
                 }
                 return leaveDuration - ((((20 * (saturdaySundayCount / 2)) + (24 * (saturdaySundayCount / 2))) * 60) + ((saturdaySundayCount / 2) * 30) + (60 * 16 * (workingDays - 1)) + 60);
@@ -184,7 +184,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     public Long calculateExtraTimeTheFirstDayInMonth(Date toDate, Date theFirstDateOfMonth) {
         Long durationInLeaveApplicationWithDifferentMonthDb = DateDiff.getDateDiff(theFirstDateOfMonth, toDate, TimeUnit.MINUTES);
         Integer daysFromTheFirstDateInMonth = (DateDiff.getDate(toDate) - DateDiff.getDate(theFirstDateOfMonth));
-        if (DateDiff.getHour(toDate) <= stopMorningWorkTime) {
+        if (DateDiff.getHour(toDate) <= lunchBreak) {
             return (durationInLeaveApplicationWithDifferentMonthDb - ((16 * (daysFromTheFirstDateInMonth) * 60) + 480));
         }
         return (durationInLeaveApplicationWithDifferentMonthDb - ((16 * (daysFromTheFirstDateInMonth) * 60) + 540));
@@ -193,7 +193,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     public Long calculateExtraTimeTheLastDayInMonth(Date fromDate, Date theLastDateOfMonth) {
         Long durationInLeaveApplicationWithDifferentMonthDb = DateDiff.getDateDiff(fromDate, theLastDateOfMonth, TimeUnit.MINUTES);
         Integer daysToTheLastDateInMonth = (DateDiff.getDate(theLastDateOfMonth) - DateDiff.getDate(fromDate));
-        if (DateDiff.getHour(fromDate) <= stopMorningWorkTime) {
+        if (DateDiff.getHour(fromDate) <= lunchBreak) {
             return (durationInLeaveApplicationWithDifferentMonthDb - ((16 * (daysToTheLastDateInMonth)) + 420));
         }
         return (durationInLeaveApplicationWithDifferentMonthDb - ((16 * (daysToTheLastDateInMonth)) + 360));
@@ -265,7 +265,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
     @Override
     public LeaveApplication update(LeaveApplicationUpdateForm leaveApplicationUpdateForm) {
         LeaveApplication leaveApplication = getById(leaveApplicationUpdateForm.getId());
-        if (leaveApplication.getStatus().equals("OK")) {
+        if (leaveApplication.getStatus() == 1) {
             throw new DataNotFoundException(ExceptionConstants.EMPLOYEE_LEAVE_ACTION_ALREADY_TAKEN);
         } else {
             String employeeName = ExtractUserAuthentication.getCurrentUser().getUsername();

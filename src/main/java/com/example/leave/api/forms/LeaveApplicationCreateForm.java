@@ -23,8 +23,6 @@ public class LeaveApplicationCreateForm {
 
     private String reason;
 
-    private String status;
-
     private Integer policyId;
 
 
